@@ -1,6 +1,5 @@
 import base64
 import io
-import os
 import pathlib
 import re
 import sys
@@ -9,8 +8,6 @@ import pandas as pd
 import pypdfium2 as pdfium
 import requests
 import streamlit as st
-
-from dotenv import load_dotenv
 
 
 # =========================================================
@@ -40,19 +37,20 @@ except Exception as weasyprint_error:
 
 
 # =========================================================
-# ENVIRONMENT
+# N8N WEBHOOKS
 # =========================================================
 
-load_dotenv()
+# Paste the Production URLs from the activated n8n workflows.
+# These are public once the app is on GitHub, and the webhooks
+# have no Header Auth.
 
-
-GENERATE_WEBHOOK_URL = os.getenv(
-    "N8N_GENERATE_WEBHOOK_URL"
+GENERATE_WEBHOOK_URL = (
+    "https://muneeraalamro.app.n8n.cloud/webhook/receipt-generate"
 )
 
 
-EMAIL_WEBHOOK_URL = os.getenv(
-    "N8N_EMAIL_WEBHOOK_URL"
+EMAIL_WEBHOOK_URL = (
+    "https://muneeraalamro.app.n8n.cloud/webhook/receipt-email"
 )
 
 
@@ -614,17 +612,6 @@ if WEASYPRINT_IMPORT_ERROR:
 
     st.caption(
         f"Import error: {WEASYPRINT_IMPORT_ERROR}"
-    )
-
-    st.stop()
-
-
-if not GENERATE_WEBHOOK_URL:
-
-    st.error(
-        "N8N_GENERATE_WEBHOOK_URL is not set. Add it to your .env "
-        "file, or to the Secrets console if you are on Streamlit "
-        "Community Cloud."
     )
 
     st.stop()
@@ -1305,7 +1292,7 @@ if receipt and pdf_bytes:
         if not EMAIL_WEBHOOK_URL:
 
             st.info(
-                "Set N8N_EMAIL_WEBHOOK_URL in your .env file to "
+                "Set EMAIL_WEBHOOK_URL at the top of app.py to "
                 "enable emailing."
             )
 
