@@ -710,8 +710,8 @@ SUBTITLE_AR = (
 # are applied here as CSS. Nothing in .streamlit is required.
 
 THEME = {
-    "page": "#f4f1ea",
-    "sidebar": "#efebe3",
+    "page": "#f5f1e8",
+    "sidebar": "#f5f1e8",
     "text": "#1c1c1c",
     "muted": "#5c5a52",
     "paper": "#ffffff",
@@ -719,15 +719,17 @@ THEME = {
     "primary": "#7a8048",
     "primary_hover": "#63693b",
     "on_primary": "#f7f4ea",
-    "banner": "#f4f1ea",
+    "banner": "#f5f1e8",
     "sidebar_text": "#1c1c1c",
+    "control": "#ffffff",
 }
 
 
 def apply_theme(ui_lang):
     """
-    Light paper-studio chrome. No black surfaces. Olive is an
-    accent on primary buttons only. Hides Streamlit chrome.
+    Cream paper studio matching the Fatoura mockup. Forces a light
+    color-scheme so OS dark mode cannot paint dropdowns black.
+    Olive is the only accent. Hides Streamlit chrome.
     """
 
     direction = "rtl" if ui_lang == "ar" else "ltr"
@@ -743,21 +745,30 @@ def apply_theme(ui_lang):
     on_primary = THEME["on_primary"]
     banner = THEME["banner"]
     sidebar_text = THEME["sidebar_text"]
+    control = THEME["control"]
 
     st.markdown(
         f"""
 <style>
     @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap");
 
+    html, body, .stApp, [data-testid="stSidebar"],
+    [data-baseweb="popover"], [data-baseweb="menu"] {{
+        color-scheme: light !important;
+    }}
     #MainMenu {{visibility: hidden;}}
     header[data-testid="stHeader"] {{display: none !important;}}
     footer {{visibility: hidden;}}
     .stDeployButton, [data-testid="stAppDeployButton"],
-    .stAppDeployButton {{display: none !important;}}
-    div[data-testid="stToolbar"] {{display: none !important;}}
-    div[data-testid="stDecoration"] {{display: none !important;}}
-    div[data-testid="stStatusWidget"] {{display: none !important;}}
-    a[href*="streamlit.io"] {{display: none !important;}}
+    .stAppDeployButton, [class*="stDeployButton"],
+    [class*="stAppToolbar"], [data-testid="stToolbar"],
+    [data-testid="stDecoration"], [data-testid="stStatusWidget"],
+    [data-testid="stHeaderActionElements"],
+    a[href*="streamlit.io"], a[href*="share.streamlit.io"] {{
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+    }}
     html, body, .stApp {{
         font-family: "IBM Plex Sans", "IBM Plex Sans Arabic",
             "Segoe UI", sans-serif;
@@ -766,7 +777,7 @@ def apply_theme(ui_lang):
         background: {page};
         color: {text};
         direction: {direction};
-        --primary-color: {primary};
+        --primary-color: {primary} !important;
         --background-color: {page};
         --secondary-background-color: {paper};
         --text-color: {text};
@@ -775,7 +786,7 @@ def apply_theme(ui_lang):
         background: {page};
     }}
     .block-container {{
-        padding-top: 0.75rem;
+        padding-top: 0.9rem;
         padding-bottom: 2.5rem;
         max-width: 1180px;
     }}
@@ -785,15 +796,15 @@ def apply_theme(ui_lang):
         font-size: 0.8rem;
     }}
     [data-testid="stSubheader"] {{
-        font-size: 0.72rem !important;
+        font-size: 1.35rem !important;
         font-weight: 600 !important;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: {muted} !important;
-        margin-bottom: 0.35rem !important;
+        letter-spacing: 0;
+        text-transform: none;
+        color: {text} !important;
+        margin-bottom: 0.45rem !important;
     }}
     [data-testid="stWidgetLabel"] p {{
-        font-size: 0.84rem;
+        font-size: 0.92rem;
         font-weight: 500;
         color: {text};
     }}
@@ -802,13 +813,13 @@ def apply_theme(ui_lang):
     }}
     .fatoura-banner {{
         background: {banner};
-        margin: -0.75rem -1rem 1.25rem -1rem;
-        padding: 0.7rem 1rem 0.85rem 1rem;
+        margin: -0.9rem -1rem 0.9rem -1rem;
+        padding: 0.35rem 1rem 0.15rem 1rem;
         text-align: center;
-        border-bottom: 1px solid {hairline};
+        border-bottom: none;
     }}
     .fatoura-banner img {{
-        max-width: 280px;
+        max-width: 420px;
         width: 100%;
         height: auto;
         display: inline-block;
@@ -816,36 +827,35 @@ def apply_theme(ui_lang):
     .fatoura-subtitle {{
         text-align: center;
         color: {muted};
-        font-size: 0.88rem;
+        font-size: 0.92rem;
         line-height: 1.55;
-        margin: 0 0 1.75rem 0;
-        letter-spacing: 0.01em;
+        margin: 0 0 1.6rem 0;
     }}
     .fatoura-subtitle span {{
         display: block;
     }}
     .fatoura-subtitle span + span {{
-        margin-top: 0.2rem;
+        margin-top: 0.15rem;
         font-family: "IBM Plex Sans Arabic", "IBM Plex Sans", sans-serif;
     }}
     .fatoura-paper {{
         background: {paper};
         border: 1px solid {hairline};
-        border-radius: 2px;
-        padding: 0.85rem;
+        border-radius: 8px;
+        padding: 1.4rem 1rem;
+        min-height: 22rem;
         box-shadow: none;
     }}
     .fatoura-empty {{
         color: {muted};
         text-align: center;
-        padding: 4rem 1rem;
-        font-size: 0.9rem;
-        letter-spacing: 0.02em;
+        padding: 6.5rem 1rem;
+        font-size: 0.95rem;
     }}
     div.stButton > button {{
-        border-radius: 2px;
+        border-radius: 6px;
         font-weight: 500;
-        letter-spacing: 0.02em;
+        min-height: 2.6rem;
     }}
     div.stButton > button[kind="primary"] {{
         background-color: {primary};
@@ -858,51 +868,86 @@ def apply_theme(ui_lang):
         color: {on_primary};
     }}
     [data-testid="stFileUploaderDropzone"] {{
-        background: {paper};
+        background: {control};
         border: 1px solid {hairline};
-        border-radius: 2px;
+        border-radius: 8px;
+    }}
+    [data-testid="stFileUploaderDropzone"] button,
+    [data-testid="stFileUploaderDropzone"] p {{
+        color: {text} !important;
+        background: {control} !important;
+        border-color: {hairline} !important;
     }}
     [data-testid="stTextInput"] input,
     [data-testid="stNumberInput"] input,
-    [data-testid="stTextArea"] textarea,
-    [data-testid="stSelectbox"] > div {{
-        border-radius: 2px;
-        background: {paper};
+    [data-testid="stTextArea"] textarea {{
+        border-radius: 6px;
+        background: {control} !important;
+        color: {text} !important;
+        border-color: {hairline} !important;
     }}
     [data-testid="stTextInput"] input:focus,
     [data-testid="stNumberInput"] input:focus,
     [data-testid="stTextArea"] textarea:focus {{
-        border-color: {primary};
+        border-color: {primary} !important;
         box-shadow: 0 0 0 1px {primary};
     }}
-    div[role="radiogroup"] label {{
-        border-radius: 2px !important;
+    [data-testid="stNumberInput"] button {{
+        background: {control} !important;
+        color: {text} !important;
+        border-color: {hairline} !important;
+    }}
+    [data-baseweb="select"] > div,
+    [data-testid="stSelectbox"] [data-baseweb="select"] > div {{
+        background-color: {control} !important;
+        color: {text} !important;
+        border-color: {hairline} !important;
+        border-radius: 6px;
+    }}
+    [data-baseweb="select"] span, [data-baseweb="select"] svg {{
+        color: {text} !important;
+        fill: {text} !important;
+    }}
+    [data-baseweb="popover"],
+    [data-baseweb="menu"],
+    ul[role="listbox"],
+    li[role="option"] {{
+        background-color: {control} !important;
+        color: {text} !important;
+    }}
+    li[role="option"]:hover {{
+        background-color: {page} !important;
+    }}
+    [data-baseweb="radio"]:has(input:checked) > div {{
+        border-color: {primary} !important;
+        background: transparent !important;
+    }}
+    [data-baseweb="radio"]:has(input:checked) > div > div,
+    [data-baseweb="radio"] input:checked ~ div > div {{
+        background-color: {primary} !important;
+        border-color: {primary} !important;
+    }}
+    [data-baseweb="radio"] > div {{
+        border-color: {hairline} !important;
     }}
     [data-testid="stRadio"] [aria-checked="true"] {{
         background-color: {primary} !important;
         color: {on_primary} !important;
         border-color: {primary} !important;
     }}
-    [data-baseweb="radio"] input:checked + div,
-    [data-baseweb="checkbox"] input:checked + div {{
-        background-color: {primary} !important;
-        border-color: {primary} !important;
-    }}
-    [data-testid="stSlider"] [role="slider"],
-    [data-testid="stSlider"] div[data-baseweb="slider"] div {{
-        background-color: {primary} !important;
-        border-color: {primary} !important;
-    }}
     [data-testid="stExpander"] {{
         border: 1px solid {hairline};
-        border-radius: 2px;
-        background: {paper};
+        border-radius: 8px;
+        background: {control};
     }}
     [data-testid="stSidebar"] {{
         background: {sidebar};
         border-right: 1px solid {hairline};
         direction: {direction};
         color: {sidebar_text};
+    }}
+    section[data-testid="stSidebar"] > div {{
+        background: {sidebar};
     }}
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{
@@ -915,7 +960,10 @@ def apply_theme(ui_lang):
         border-color: {hairline};
     }}
     [data-testid="stSidebar"] button {{
-        border-radius: 2px;
+        border-radius: 6px;
+        background: {control} !important;
+        color: {text} !important;
+        border: 1px solid {hairline} !important;
     }}
 </style>
         """,
@@ -995,14 +1043,6 @@ if "history" not in st.session_state:
 
 with st.sidebar:
 
-    if SIDE_LOGO_PATH.exists():
-
-        st.image(
-            str(SIDE_LOGO_PATH),
-            width=40
-        )
-
-
     ui_choice = st.radio(
         "App language / لغة التطبيق",
         ["English", "العربية"],
@@ -1056,11 +1096,6 @@ with st.sidebar:
 
     st.divider()
 
-    st.caption(
-        t["history"]
-    )
-
-
     history = st.session_state.get(
         "history",
         []
@@ -1068,6 +1103,11 @@ with st.sidebar:
 
 
     if history:
+
+        st.caption(
+            t["history"]
+        )
+
 
         for position, entry in enumerate(reversed(history)):
 
