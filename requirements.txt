@@ -1,0 +1,27 @@
+# Python dependencies. Every package the app imports is listed here
+# explicitly, including ones that would arrive anyway as a
+# dependency of something else, so the environment can be recreated
+# exactly on another machine.
+#
+#   pip install -r requirements.txt
+#
+# WeasyPrint additionally needs the Pango, HarfBuzz and Cairo C
+# libraries, which pip cannot install. See README.md.
+
+streamlit>=1.63,<2
+pandas>=3.0,<4
+requests>=2.32,<3
+python-dotenv>=1.2,<2
+
+# PDF output. The upper bound is tight to one major version because
+# WeasyPrint can change how it renders between majors, and rendering
+# is the part of this app you cannot check by reading a diff.
+weasyprint>=70,<71
+
+# Reads the template PDF: rasterizes its pages for the vision model
+# and extracts its text. Also used to preview finished receipts.
+pypdfium2>=5.13,<6
+
+# Required by pypdfium2's PdfBitmap.to_pil(), which is how a
+# rendered page becomes a PNG.
+pillow>=12.3,<13
