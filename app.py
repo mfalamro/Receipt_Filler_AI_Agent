@@ -56,11 +56,6 @@ EMAIL_WEBHOOK_URL = os.getenv(
 )
 
 
-N8N_API_KEY = os.getenv(
-    "N8N_API_KEY"
-)
-
-
 # =========================================================
 # PATHS AND CONSTANTS
 # =========================================================
@@ -901,13 +896,6 @@ if generate_button:
         }
 
 
-        headers = {}
-
-        if N8N_API_KEY:
-
-            headers["X-API-Key"] = N8N_API_KEY
-
-
         try:
 
             with st.spinner(
@@ -918,7 +906,6 @@ if generate_button:
                 response = requests.post(
                     GENERATE_WEBHOOK_URL,
                     json=payload,
-                    headers=headers,
                     timeout=REQUEST_TIMEOUT_SECONDS
                 )
 
@@ -1377,13 +1364,6 @@ if receipt and pdf_bytes:
                     }
 
 
-                    headers = {}
-
-                    if N8N_API_KEY:
-
-                        headers["X-API-Key"] = N8N_API_KEY
-
-
                     try:
 
                         with st.spinner(
@@ -1394,7 +1374,6 @@ if receipt and pdf_bytes:
                                 EMAIL_WEBHOOK_URL,
                                 files=files,
                                 data=form_fields,
-                                headers=headers,
                                 timeout=REQUEST_TIMEOUT_SECONDS
                             )
 
