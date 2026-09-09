@@ -60,9 +60,15 @@ EMAIL_WEBHOOK_URL = (
 
 PROJECT_DIR = pathlib.Path(__file__).parent.resolve()
 
+ASSETS_DIR = PROJECT_DIR / "assets"
+
 TEMPLATES_DIR = PROJECT_DIR / "templates"
 
-FONTS_DIR = PROJECT_DIR / "assets" / "fonts"
+FONTS_DIR = ASSETS_DIR / "fonts"
+
+APP_LOGO_PATH = ASSETS_DIR / "APP_LOGO.png"
+
+SIDE_LOGO_PATH = ASSETS_DIR / "SIDE_LOGO.png"
 
 
 # Receipts are issued in Saudi riyals only.
@@ -574,26 +580,238 @@ if __name__ == "__main__" and "--selftest" in sys.argv:
 
 
 # =========================================================
-# PAGE CONFIG
+# UI COPY
 # =========================================================
 
-st.set_page_config(
-    page_title="AI Receipt Filler",
-    page_icon="🧾",
-    layout="wide"
+UI_COPY = {
+    "en": {
+        "generate": "Generate receipt",
+        "template": "Template",
+        "upload": "Upload a template PDF, or pick one below",
+        "no_templates": (
+            "No templates found. Add a PDF to the templates/ folder, "
+            "or upload one above."
+        ),
+        "template_preview": "Template preview",
+        "details": "Receipt details",
+        "details_placeholder": (
+            "Receipt for 3 mechanical keyboards at 120 SAR each, "
+            "sold to Acme Company, paid in cash today."
+        ),
+        "pdf_language": "Receipt language",
+        "need_template": "Choose or upload a template PDF first.",
+        "need_details": "Describe the receipt before generating it.",
+        "spinner": "Filling the template...",
+        "success": "Receipt generated.",
+        "empty_preview": "Your receipt will appear here.",
+        "download": "Download PDF",
+        "email": "Email",
+        "email_help": (
+            "The sender is the Gmail account authorized in n8n. "
+            "The recipient is whatever you enter here."
+        ),
+        "email_to": "Recipient email",
+        "send_email": "Send email",
+        "invalid_email": "Enter a valid recipient email address.",
+        "sending": "Sending...",
+        "sent": "Receipt sent.",
+        "email_unset": "Set EMAIL_WEBHOOK_URL at the top of app.py to enable emailing.",
+        "line_items": "Line items",
+        "warnings": "Warnings",
+        "no_warnings": "No warnings for this receipt.",
+        "ui_language": "App language",
+        "vat_treatment": "VAT treatment",
+        "vat_rate": "VAT rate (%)",
+        "currency_note": f"Currency is fixed to {CURRENCY}.",
+        "receipt_number": "Receipt number (optional)",
+        "receipt_number_help": (
+            "Leave empty to assign the next number automatically. "
+            "A number you supply is rejected if it already exists."
+        ),
+        "history": "This session",
+        "preview_fail": "The PDF was produced but could not be previewed on screen.",
+        "subtotal": "Subtotal",
+        "vat": "VAT",
+        "total": "Total",
+    },
+    "ar": {
+        "generate": "إنشاء فاتورة",
+        "template": "القالب",
+        "upload": "ارفع قالب PDF أو اختر من القائمة",
+        "no_templates": (
+            "لا توجد قوالب. أضف ملف PDF إلى مجلد templates/ أو ارفعه أعلاه."
+        ),
+        "template_preview": "معاينة القالب",
+        "details": "بيانات الفاتورة",
+        "details_placeholder": (
+            "فاتورة بثلاثة لوحات مفاتيح ميكانيكية بسعر ١٢٠ ريالاً للواحدة، "
+            "بيعت لشركة أكمي، دفعت نقداً اليوم."
+        ),
+        "pdf_language": "لغة الفاتورة",
+        "need_template": "اختر قالباً أو ارفعه أولاً.",
+        "need_details": "اكتب بيانات الفاتورة قبل الإنشاء.",
+        "spinner": "جارٍ تعبئة القالب...",
+        "success": "تم إنشاء الفاتورة.",
+        "empty_preview": "ستظهر فاتورتك هنا.",
+        "download": "تنزيل PDF",
+        "email": "البريد",
+        "email_help": (
+            "المرسل هو حساب جيميل المصرّح في n8n. "
+            "المستلم هو ما تدخله هنا."
+        ),
+        "email_to": "بريد المستلم",
+        "send_email": "إرسال",
+        "invalid_email": "أدخل بريداً إلكترونياً صالحاً.",
+        "sending": "جارٍ الإرسال...",
+        "sent": "تم إرسال الفاتورة.",
+        "email_unset": "عيّن EMAIL_WEBHOOK_URL في أعلى app.py لتفعيل البريد.",
+        "line_items": "البنود",
+        "warnings": "تنبيهات",
+        "no_warnings": "لا تنبيهات لهذه الفاتورة.",
+        "ui_language": "لغة التطبيق",
+        "vat_treatment": "معاملة الضريبة",
+        "vat_rate": "نسبة الضريبة (%)",
+        "currency_note": f"العملة ثابتة: {CURRENCY}.",
+        "receipt_number": "رقم الفاتورة (اختياري)",
+        "receipt_number_help": (
+            "اتركه فارغاً ليُعيَّن الرقم التالي تلقائياً. "
+            "الرقم الذي تدخله يُرفض إن كان موجوداً."
+        ),
+        "history": "هذه الجلسة",
+        "preview_fail": "أُنشئ ملف PDF وتعذرت معاينته على الشاشة.",
+        "subtotal": "المجموع الفرعي",
+        "vat": "الضريبة",
+        "total": "الإجمالي",
+    },
+}
+
+
+VAT_KEYS = ["standard", "zero_rated", "exempt"]
+
+VAT_LABELS = {
+    "standard": {"en": "Standard rate", "ar": "سعر قياسي"},
+    "zero_rated": {"en": "Zero-rated", "ar": "صفرية"},
+    "exempt": {"en": "Exempt", "ar": "معفاة"},
+}
+
+
+SUBTITLE = (
+    "Choose a template, type your fields and generate your "
+    "downloadable receipt. | اختر قالبًا، وأدخل بياناتك، ثم أنشئ "
+    "فاتورتك وحمّلها."
 )
 
 
+def apply_theme(ui_lang):
+    """
+    Cream and olive chrome. Hides Streamlit's own header, footer,
+    toolbar and Deploy button.
+    """
+
+    direction = "rtl" if ui_lang == "ar" else "ltr"
+
+    st.markdown(
+        f"""
+<style>
+    #MainMenu {{visibility: hidden;}}
+    header[data-testid="stHeader"] {{display: none !important;}}
+    footer {{visibility: hidden;}}
+    .stDeployButton, [data-testid="stAppDeployButton"],
+    .stAppDeployButton {{display: none !important;}}
+    div[data-testid="stToolbar"] {{display: none !important;}}
+    div[data-testid="stDecoration"] {{display: none !important;}}
+    div[data-testid="stStatusWidget"] {{display: none !important;}}
+    a[href*="streamlit.io"] {{display: none !important;}}
+    .stApp {{
+        background: #f5e7d0;
+        color: #3d3a2e;
+        direction: {direction};
+    }}
+    [data-testid="stSidebar"] {{
+        direction: {direction};
+    }}
+    .block-container {{
+        padding-top: 1.2rem;
+        max-width: 1400px;
+    }}
+    .fatoura-banner {{
+        background: #000000;
+        margin: -1.2rem -1rem 1.25rem -1rem;
+        padding: 1.4rem 1rem 1.1rem 1rem;
+        text-align: center;
+    }}
+    .fatoura-banner img {{
+        max-width: min(720px, 100%);
+        width: 100%;
+        height: auto;
+        display: inline-block;
+    }}
+    .fatoura-subtitle {{
+        text-align: center;
+        color: #3d3a2e;
+        font-size: 1.02rem;
+        line-height: 1.55;
+        margin: 0 0 1.6rem 0;
+    }}
+    .fatoura-paper {{
+        background: #fffaf3;
+        border: 1px solid #a29c78;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 8px 24px rgba(61, 58, 46, 0.08);
+    }}
+    .fatoura-empty {{
+        color: #88825c;
+        text-align: center;
+        padding: 3.5rem 1rem;
+    }}
+    div.stButton > button[kind="primary"] {{
+        background-color: #88825c;
+        border-color: #88825c;
+        color: #fffaf3;
+    }}
+    div.stButton > button[kind="primary"]:hover {{
+        background-color: #a29c78;
+        border-color: #a29c78;
+        color: #3d3a2e;
+    }}
+    [data-testid="stSidebar"] {{
+        background: #f5e7d0;
+        border-color: #a29c78;
+    }}
+</style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def banner_html():
+    encoded = base64.b64encode(
+        APP_LOGO_PATH.read_bytes()
+    ).decode("ascii")
+
+    return (
+        '<div class="fatoura-banner">'
+        f'<img src="data:image/png;base64,{encoded}" '
+        'alt="fatoura | فاتورة">'
+        "</div>"
+    )
+
+
 # =========================================================
-# APP HEADER
+# PAGE CONFIG
 # =========================================================
 
-st.title("🧾 AI Receipt Filler")
+_page_icon = (
+    str(SIDE_LOGO_PATH)
+    if SIDE_LOGO_PATH.exists()
+    else None
+)
 
-st.write(
-    "Choose a receipt template, describe the receipt in plain "
-    "language, and an AI agent fills it in and returns a "
-    "downloadable PDF."
+st.set_page_config(
+    page_title="Fatoura | فاتورة",
+    page_icon=_page_icon,
+    layout="wide"
 )
 
 
@@ -634,136 +852,225 @@ if "history" not in st.session_state:
 
 
 # =========================================================
-# TEMPLATE SELECTION
+# SIDEBAR
 # =========================================================
 
-st.subheader("1. Template")
+with st.sidebar:
+
+    if SIDE_LOGO_PATH.exists():
+
+        st.image(
+            str(SIDE_LOGO_PATH),
+            width=72
+        )
 
 
-template_files = sorted(
-    TEMPLATES_DIR.glob("*.pdf")
-)
-
-
-uploaded_template = st.file_uploader(
-    "Upload a template PDF, or pick one below",
-    type=["pdf"],
-    key="template_upload"
-)
-
-
-template_bytes = None
-
-template_name = None
-
-
-if uploaded_template is not None:
-
-    template_bytes = uploaded_template.getvalue()
-
-    template_name = uploaded_template.name
-
-
-elif template_files:
-
-    chosen_name = st.selectbox(
-        "Template",
-        [path.name for path in template_files],
-        key="template_choice"
+    ui_choice = st.radio(
+        "App language / لغة التطبيق",
+        ["English", "العربية"],
+        horizontal=True,
+        key="ui_language_choice"
     )
 
-    template_name = chosen_name
+    ui_lang = (
+        "ar"
+        if ui_choice == "العربية"
+        else "en"
+    )
 
-    template_bytes = (
-        TEMPLATES_DIR / chosen_name
-    ).read_bytes()
+    t = UI_COPY[ui_lang]
 
+
+    st.divider()
+
+
+    vat_key = st.selectbox(
+        t["vat_treatment"],
+        VAT_KEYS,
+        format_func=lambda key: VAT_LABELS[key][ui_lang],
+        key="vat_key"
+    )
+
+
+    vat_rate = st.number_input(
+        t["vat_rate"],
+        min_value=0.0,
+        max_value=100.0,
+        value=15.0,
+        step=0.5,
+        disabled=(vat_key != "standard"),
+        key="vat_rate"
+    )
+
+
+    st.caption(
+        t["currency_note"]
+    )
+
+
+    receipt_number_override = st.text_input(
+        t["receipt_number"],
+        placeholder="INV-247",
+        help=t["receipt_number_help"],
+        key="receipt_number_override"
+    )
+
+
+    st.divider()
+
+    st.caption(
+        t["history"]
+    )
+
+
+    history = st.session_state.get(
+        "history",
+        []
+    )
+
+
+    if history:
+
+        for position, entry in enumerate(reversed(history)):
+
+            st.download_button(
+                f"{entry['receipt_number']}.pdf",
+                data=entry["pdf_bytes"],
+                file_name=f"{entry['receipt_number']}.pdf",
+                mime="application/pdf",
+                key=f"download_history_{position}"
+            )
+
+
+if vat_key == "standard":
+
+    effective_vat_rate = float(vat_rate)
+    vat_mode = "standard"
 
 else:
 
-    st.warning(
-        "No templates found. Add a PDF to the templates/ folder, "
-        "or upload one above."
+    effective_vat_rate = 0.0
+    vat_mode = vat_key
+
+
+apply_theme(ui_lang)
+
+
+# =========================================================
+# BANNER
+# =========================================================
+
+if APP_LOGO_PATH.exists():
+
+    st.markdown(
+        banner_html(),
+        unsafe_allow_html=True
     )
 
 
-# Reading the template is also the first validation of the file, so
-# a corrupt PDF is reported here rather than mid-request.
-
-template_images = []
-
-template_text = ""
-
-
-if template_bytes:
-
-    try:
-
-        template_images, template_text = read_template_pdf(
-            template_bytes
-        )
-
-
-        with st.expander(
-            f"Preview of {template_name}"
-        ):
-
-            for page_png in template_images:
-
-                st.image(
-                    page_png,
-                    width=520
-                )
-
-
-            if template_text:
-
-                st.caption(
-                    "Text extracted from the template and sent to "
-                    "the agent alongside the images:"
-                )
-
-                st.code(
-                    template_text
-                )
-
-
-    except Exception as template_error:
-
-        st.error(
-            f"Could not read that PDF: {template_error}"
-        )
-
-        template_bytes = None
-
-
-# =========================================================
-# RECEIPT INPUTS
-# =========================================================
-
-st.subheader("2. Receipt details")
-
-
-details = st.text_area(
-    "Describe the receipt",
-    height=140,
-    placeholder=(
-        "Receipt for 3 mechanical keyboards at 120 SAR each and "
-        "2 USB-C cables at 35 SAR each, sold to Acme Company, "
-        "paid in cash today. Seller is Tuwaiq Trading Est., "
-        "VAT number 300012345600003."
-    ),
-    key="receipt_details"
+st.markdown(
+    f'<p class="fatoura-subtitle">{SUBTITLE}</p>',
+    unsafe_allow_html=True
 )
 
 
-column_left, column_right = st.columns(2)
+# =========================================================
+# TWO COLUMNS
+# =========================================================
+
+compose_col, preview_col = st.columns(
+    [1, 1],
+    gap="large"
+)
 
 
-with column_left:
+with compose_col:
 
-    language_label = st.radio(
-        "Receipt language",
+    st.subheader(
+        t["template"]
+    )
+
+
+    template_files = sorted(
+        TEMPLATES_DIR.glob("*.pdf")
+    )
+
+
+    uploaded_template = st.file_uploader(
+        t["upload"],
+        type=["pdf"],
+        key="template_upload"
+    )
+
+
+    template_bytes = None
+    template_name = None
+
+
+    if uploaded_template is not None:
+
+        template_bytes = uploaded_template.getvalue()
+        template_name = uploaded_template.name
+
+
+    elif template_files:
+
+        chosen_name = st.selectbox(
+            t["template"],
+            [path.name for path in template_files],
+            key="template_choice"
+        )
+
+        template_name = chosen_name
+        template_bytes = (
+            TEMPLATES_DIR / chosen_name
+        ).read_bytes()
+
+
+    else:
+
+        st.warning(
+            t["no_templates"]
+        )
+
+
+    template_images = []
+    template_text = ""
+
+
+    if template_bytes:
+
+        try:
+
+            template_images, template_text = read_template_pdf(
+                template_bytes
+            )
+
+
+            with st.expander(
+                t["template_preview"],
+                expanded=False
+            ):
+
+                for page_png in template_images:
+
+                    st.image(
+                        page_png,
+                        width=420
+                    )
+
+
+        except Exception as template_error:
+
+            st.error(
+                f"{template_error}"
+            )
+
+            template_bytes = None
+
+
+    pdf_language_label = st.radio(
+        t["pdf_language"],
         ["English", "العربية"],
         horizontal=True,
         key="receipt_language"
@@ -771,152 +1078,157 @@ with column_left:
 
     language = (
         "ar"
-        if language_label == "العربية"
+        if pdf_language_label == "العربية"
         else "en"
     )
 
 
-    receipt_number_override = st.text_input(
-        "Receipt number (optional)",
-        placeholder="INV-247",
-        help=(
-            "Leave empty to let the workflow assign the next "
-            "number automatically. A number you supply is "
-            "rejected if it already exists."
-        ),
-        key="receipt_number_override"
+    details = st.text_area(
+        t["details"],
+        height=160,
+        placeholder=t["details_placeholder"],
+        key="receipt_details"
     )
 
 
-with column_right:
-
-    vat_treatment = st.selectbox(
-        "VAT treatment",
-        ["Standard rate", "Zero-rated", "Exempt"],
-        key="vat_treatment"
+    generate_button = st.button(
+        t["generate"],
+        type="primary",
+        use_container_width=True
     )
 
 
-    vat_rate = st.number_input(
-        "VAT rate (%)",
-        min_value=0.0,
-        max_value=100.0,
-        value=15.0,
-        step=0.5,
-        disabled=(vat_treatment != "Standard rate"),
-        key="vat_rate"
-    )
+    if generate_button:
 
+        if not template_bytes:
 
-    st.caption(
-        f"Currency is fixed to {CURRENCY}."
-    )
-
-
-if vat_treatment == "Standard rate":
-
-    effective_vat_rate = float(vat_rate)
-
-    vat_mode = "standard"
-
-
-else:
-
-    effective_vat_rate = 0.0
-
-    vat_mode = (
-        "zero_rated"
-        if vat_treatment == "Zero-rated"
-        else "exempt"
-    )
-
-
-# =========================================================
-# GENERATE BUTTON
-# =========================================================
-
-st.divider()
-
-
-generate_button = st.button(
-    "Generate Receipt",
-    type="primary",
-    use_container_width=True
-)
-
-
-# =========================================================
-# SEND TO N8N
-# =========================================================
-
-if generate_button:
-
-    if not template_bytes:
-
-        st.warning(
-            "Choose or upload a template PDF first."
-        )
-
-
-    elif not details.strip():
-
-        st.warning(
-            "Describe the receipt before generating it."
-        )
-
-
-    else:
-
-        payload = {
-            "details": details.strip(),
-            "language": language,
-            "currency": CURRENCY,
-            "vat_mode": vat_mode,
-            "vat_rate": effective_vat_rate,
-            "receipt_number": receipt_number_override.strip(),
-            "template_name": template_name,
-            "template_text": template_text,
-            "template_images": [
-                png_to_data_url(page_png)
-                for page_png in template_images
-            ]
-        }
-
-
-        try:
-
-            with st.spinner(
-                "The agent is reading your template and writing "
-                "the receipt..."
-            ):
-
-                response = requests.post(
-                    GENERATE_WEBHOOK_URL,
-                    json=payload,
-                    timeout=REQUEST_TIMEOUT_SECONDS
-                )
-
-
-            st.write(
-                "Status Code:",
-                response.status_code
+            st.warning(
+                t["need_template"]
             )
 
 
-            if response.status_code == 200:
+        elif not details.strip():
 
-                try:
+            st.warning(
+                t["need_details"]
+            )
 
-                    result = response.json()
+
+        else:
+
+            payload = {
+                "details": details.strip(),
+                "language": language,
+                "currency": CURRENCY,
+                "vat_mode": vat_mode,
+                "vat_rate": effective_vat_rate,
+                "receipt_number": receipt_number_override.strip(),
+                "template_name": template_name,
+                "template_text": template_text,
+                "template_images": [
+                    png_to_data_url(page_png)
+                    for page_png in template_images
+                ]
+            }
 
 
-                except Exception:
+            try:
 
-                    result = None
+                with st.spinner(
+                    t["spinner"]
+                ):
+
+                    response = requests.post(
+                        GENERATE_WEBHOOK_URL,
+                        json=payload,
+                        timeout=REQUEST_TIMEOUT_SECONDS
+                    )
+
+
+                if response.status_code == 200:
+
+                    try:
+
+                        result = response.json()
+
+
+                    except Exception:
+
+                        result = None
+
+                        st.error(
+                            "n8n returned a response, but it was not "
+                            "valid JSON."
+                        )
+
+                        st.code(
+                            response.text
+                        )
+
+
+                    if result is not None:
+
+                        if result.get("ok") is False:
+
+                            st.error(
+                                result.get(
+                                    "error",
+                                    "The workflow rejected the request."
+                                )
+                            )
+
+
+                        elif not result.get("html"):
+
+                            st.error(
+                                "The workflow did not return any "
+                                "document markup."
+                            )
+
+
+                        else:
+
+                            try:
+
+                                pdf_bytes = render_pdf(
+                                    result["html"],
+                                    result.get("language", language)
+                                )
+
+
+                                st.session_state["receipt"] = result
+
+                                st.session_state["pdf_bytes"] = pdf_bytes
+
+
+                                st.session_state["history"].append(
+                                    {
+                                        "receipt_number": result.get(
+                                            "receipt_number",
+                                            "unnumbered"
+                                        ),
+                                        "pdf_bytes": pdf_bytes
+                                    }
+                                )
+
+
+                                st.success(
+                                    t["success"]
+                                )
+
+
+                            except Exception as render_error:
+
+                                st.error(
+                                    "The agent's markup could not be "
+                                    f"rendered: {render_error}"
+                                )
+
+
+                else:
 
                     st.error(
-                        "n8n returned a response, but it was not "
-                        "valid JSON."
+                        "n8n returned an error"
                     )
 
                     st.code(
@@ -924,149 +1236,40 @@ if generate_button:
                     )
 
 
-                if result is not None:
-
-                    if result.get("ok") is False:
-
-                        # A validation failure or a duplicate
-                        # receipt number. No PDF is produced.
-                        st.error(
-                            result.get(
-                                "error",
-                                "The workflow rejected the request."
-                            )
-                        )
-
-
-                    elif not result.get("html"):
-
-                        st.error(
-                            "The workflow did not return any "
-                            "document markup."
-                        )
-
-                        st.json(
-                            result
-                        )
-
-
-                    else:
-
-                        try:
-
-                            pdf_bytes = render_pdf(
-                                result["html"],
-                                result.get("language", language)
-                            )
-
-
-                            st.session_state["receipt"] = result
-
-                            st.session_state["pdf_bytes"] = pdf_bytes
-
-
-                            st.session_state["history"].append(
-                                {
-                                    "receipt_number": result.get(
-                                        "receipt_number",
-                                        "unnumbered"
-                                    ),
-                                    "pdf_bytes": pdf_bytes
-                                }
-                            )
-
-
-                            st.success(
-                                "Receipt generated successfully"
-                            )
-
-
-                        except Exception as render_error:
-
-                            st.error(
-                                "The agent's markup could not be "
-                                f"rendered: {render_error}"
-                            )
-
-                            st.code(
-                                result["html"],
-                                language="html"
-                            )
-
-
-            else:
+            except requests.exceptions.Timeout:
 
                 st.error(
-                    "n8n returned an error"
-                )
-
-                st.code(
-                    response.text
+                    "The request timed out. The agent may still be "
+                    "running in n8n."
                 )
 
 
-        except requests.exceptions.Timeout:
+            except requests.exceptions.RequestException as request_error:
 
-            st.error(
-                "The request timed out. The agent may still be "
-                "running in n8n."
-            )
-
-
-        except requests.exceptions.RequestException as request_error:
-
-            st.error(
-                f"Connection error: {request_error}"
-            )
+                st.error(
+                    f"Connection error: {request_error}"
+                )
 
 
-        except Exception as unexpected_error:
+            except Exception as unexpected_error:
 
-            st.error(
-                f"Unexpected error: {unexpected_error}"
-            )
-
-
-# =========================================================
-# RESULTS
-# =========================================================
-
-receipt = st.session_state.get(
-    "receipt"
-)
-
-pdf_bytes = st.session_state.get(
-    "pdf_bytes"
-)
+                st.error(
+                    f"Unexpected error: {unexpected_error}"
+                )
 
 
-if receipt and pdf_bytes:
+with preview_col:
 
-    st.divider()
+    receipt = st.session_state.get(
+        "receipt"
+    )
 
-
-    (
-        tab_receipt,
-        tab_fields,
-        tab_notes,
-        tab_html,
-        tab_email
-    ) = st.tabs(
-        [
-            "Receipt",
-            "Fields",
-            "AI Notes",
-            "Document HTML",
-            "Email Receipt"
-        ]
+    pdf_bytes = st.session_state.get(
+        "pdf_bytes"
     )
 
 
-    # =====================================================
-    # TAB 1 — RECEIPT
-    # =====================================================
-
-    with tab_receipt:
+    if receipt and pdf_bytes:
 
         receipt_number = receipt.get(
             "receipt_number",
@@ -1074,18 +1277,9 @@ if receipt and pdf_bytes:
         )
 
 
-        st.subheader(
-            f"Receipt {receipt_number}"
-        )
-
-
-        st.download_button(
-            "Download PDF",
-            data=pdf_bytes,
-            file_name=f"{receipt_number}.pdf",
-            mime="application/pdf",
-            type="primary",
-            key="download_current"
+        st.markdown(
+            '<div class="fatoura-paper">',
+            unsafe_allow_html=True
         )
 
 
@@ -1095,218 +1289,55 @@ if receipt and pdf_bytes:
 
                 st.image(
                     page_png,
-                    width=620
+                    use_container_width=True
                 )
 
 
         except Exception as preview_error:
 
             st.info(
-                "The PDF was produced but could not be previewed "
-                f"on screen: {preview_error}"
+                f"{t['preview_fail']} {preview_error}"
             )
 
 
-    # =====================================================
-    # TAB 2 — FIELDS
-    # =====================================================
-
-    with tab_fields:
-
-        st.header(
-            "Extracted Fields"
+        st.markdown(
+            "</div>",
+            unsafe_allow_html=True
         )
 
 
-        totals = receipt.get(
-            "totals",
-            {}
+        st.download_button(
+            t["download"],
+            data=pdf_bytes,
+            file_name=f"{receipt_number}.pdf",
+            mime="application/pdf",
+            type="primary",
+            use_container_width=True,
+            key="download_current"
         )
 
 
-        metric1, metric2, metric3 = st.columns(3)
-
-
-        # "or 0" rather than a dict default, so that an explicit
-        # null from the workflow formats instead of raising.
-        subtotal = float(
-            totals.get("subtotal") or 0
-        )
-
-        vat_amount = float(
-            totals.get("vat_amount") or 0
-        )
-
-        total = float(
-            totals.get("total") or 0
-        )
-
-
-        metric1.metric(
-            "Subtotal",
-            f"{subtotal:,.2f} {CURRENCY}"
-        )
-
-
-        metric2.metric(
-            "VAT",
-            f"{vat_amount:,.2f} {CURRENCY}"
-        )
-
-
-        metric3.metric(
-            "Total",
-            f"{total:,.2f} {CURRENCY}"
-        )
-
-
-        # -------------------------------------------------
-        # LINE ITEMS
-        # -------------------------------------------------
-
-        line_items = receipt.get(
-            "line_items",
-            []
-        )
-
-
-        if line_items:
-
-            st.divider()
-
-            st.subheader(
-                "Line Items"
-            )
-
-            st.dataframe(
-                pd.DataFrame(line_items),
-                use_container_width=True
-            )
-
-
-        # -------------------------------------------------
-        # HEADER FIELDS
-        # -------------------------------------------------
-
-        fields = receipt.get(
-            "fields",
-            {}
-        )
-
-
-        if fields:
-
-            st.divider()
-
-            st.subheader(
-                "Header Fields"
-            )
-
-            st.json(
-                fields
-            )
-
-
-        with st.expander(
-            "View Full Agent Response"
-        ):
-
-            st.json(
-                receipt
-            )
-
-
-    # =====================================================
-    # TAB 3 — AI NOTES
-    # =====================================================
-
-    with tab_notes:
-
-        st.header(
-            "AI Notes"
-        )
-
-
-        notes = receipt.get(
-            "notes"
-        )
-
-
-        if notes:
-
-            if isinstance(notes, list):
-
-                for note in notes:
-
-                    st.write(
-                        f"• {note}"
-                    )
-
-
-            else:
-
-                st.write(
-                    notes
-                )
-
-
-        else:
-
-            st.info(
-                "The agent returned no notes for this receipt."
-            )
-
-
-    # =====================================================
-    # TAB 4 — DOCUMENT HTML
-    # =====================================================
-
-    with tab_html:
-
-        st.header(
-            "Document HTML"
-        )
-
-        st.write(
-            "The markup the agent wrote. Useful when a layout "
-            "comes out wrong and you want to see exactly why."
-        )
-
-        st.code(
-            receipt.get("html", ""),
-            language="html"
-        )
-
-
-    # =====================================================
-    # TAB 5 — EMAIL RECEIPT
-    # =====================================================
-
-    with tab_email:
-
-        st.header(
-            "Email Receipt"
+        st.subheader(
+            t["email"]
         )
 
 
         if not EMAIL_WEBHOOK_URL:
 
             st.info(
-                "Set EMAIL_WEBHOOK_URL at the top of app.py to "
-                "enable emailing."
+                t["email_unset"]
             )
 
 
         else:
 
-            st.write(
-                "The sender is whichever account you authorized "
-                "in n8n. The recipient is whatever you enter here."
+            st.caption(
+                t["email_help"]
             )
 
 
             recipient = st.text_input(
-                "Recipient email",
+                t["email_to"],
                 value=receipt.get("buyer_email", "") or "",
                 placeholder="buyer@example.com",
                 key="email_recipient"
@@ -1314,7 +1345,7 @@ if receipt and pdf_bytes:
 
 
             send_button = st.button(
-                "Send Email",
+                t["send_email"],
                 key="send_email"
             )
 
@@ -1324,17 +1355,11 @@ if receipt and pdf_bytes:
                 if "@" not in recipient:
 
                     st.warning(
-                        "Enter a valid recipient email address."
+                        t["invalid_email"]
                     )
 
 
                 else:
-
-                    receipt_number = receipt.get(
-                        "receipt_number",
-                        "receipt"
-                    )
-
 
                     files = {
                         "data": (
@@ -1354,7 +1379,7 @@ if receipt and pdf_bytes:
                     try:
 
                         with st.spinner(
-                            "Sending..."
+                            t["sending"]
                         ):
 
                             email_response = requests.post(
@@ -1365,16 +1390,10 @@ if receipt and pdf_bytes:
                             )
 
 
-                        st.write(
-                            "Status Code:",
-                            email_response.status_code
-                        )
-
-
                         if email_response.status_code == 200:
 
                             st.success(
-                                f"Receipt sent to {recipient}"
+                                t["sent"]
                             )
 
 
@@ -1410,31 +1429,88 @@ if receipt and pdf_bytes:
                         )
 
 
-# =========================================================
-# THIS SESSION'S RECEIPTS
-# =========================================================
-
-history = st.session_state.get(
-    "history",
-    []
-)
+        line_items = receipt.get(
+            "line_items",
+            []
+        )
 
 
-if history:
+        with st.expander(
+            t["line_items"],
+            expanded=False
+        ):
 
-    st.divider()
+            if line_items:
 
-    st.subheader(
-        "This Session's Receipts"
-    )
+                st.dataframe(
+                    pd.DataFrame(line_items),
+                    use_container_width=True
+                )
 
 
-    for position, entry in enumerate(reversed(history)):
+            totals = receipt.get(
+                "totals",
+                {}
+            )
 
-        st.download_button(
-            f"Download {entry['receipt_number']}.pdf",
-            data=entry["pdf_bytes"],
-            file_name=f"{entry['receipt_number']}.pdf",
-            mime="application/pdf",
-            key=f"download_history_{position}"
+            subtotal = float(totals.get("subtotal") or 0)
+            vat_amount = float(totals.get("vat_amount") or 0)
+            total = float(totals.get("total") or 0)
+
+            metric1, metric2, metric3 = st.columns(3)
+
+            metric1.metric(
+                t["subtotal"],
+                f"{subtotal:,.2f} {CURRENCY}"
+            )
+
+            metric2.metric(
+                t["vat"],
+                f"{vat_amount:,.2f} {CURRENCY}"
+            )
+
+            metric3.metric(
+                t["total"],
+                f"{total:,.2f} {CURRENCY}"
+            )
+
+
+        notes = receipt.get("notes") or ""
+
+        with st.expander(
+            t["warnings"],
+            expanded=False
+        ):
+
+            if notes:
+
+                if isinstance(notes, list):
+
+                    for note in notes:
+
+                        st.write(
+                            f"• {note}"
+                        )
+
+
+                else:
+
+                    st.write(
+                        notes
+                    )
+
+
+            else:
+
+                st.caption(
+                    t["no_warnings"]
+                )
+
+
+    else:
+
+        st.markdown(
+            f'<div class="fatoura-paper"><p class="fatoura-empty">'
+            f'{t["empty_preview"]}</p></div>',
+            unsafe_allow_html=True
         )
