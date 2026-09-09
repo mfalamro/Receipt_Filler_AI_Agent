@@ -710,19 +710,20 @@ SUBTITLE_AR = (
 # are applied here as CSS. Nothing in .streamlit is required.
 
 THEME = {
-    "page": "#faf9f6",
-    "sidebar": "#f3eee6",
-    "text": "#3a372f",
-    "muted": "#7a7568",
+    "page": "#fdfbf7",
+    "sidebar": "#f5f0e8",
+    "text": "#4a4a4a",
+    "muted": "#8a8680",
     "paper": "#ffffff",
-    "hairline": "#e8e4da",
-    "primary": "#7d8451",
-    "primary_hover": "#6a7044",
+    "hairline": "#e0e0e0",
+    "primary": "#7d845a",
+    "primary_hover": "#6a704c",
     "on_primary": "#ffffff",
-    "banner": "#faf9f6",
-    "sidebar_text": "#3a372f",
+    "banner": "#fdfbf7",
+    "sidebar_text": "#4a4a4a",
     "radius": "10px",
-    "card_border": "#cfc8b8",
+    "card_border": "#ece8e0",
+    "receipt_border": "#e0e0e0",
 }
 
 
@@ -747,6 +748,7 @@ def apply_theme(ui_lang):
     sidebar_text = THEME["sidebar_text"]
     radius = THEME["radius"]
     card_border = THEME["card_border"]
+    receipt_border = THEME["receipt_border"]
 
     st.markdown(
         f"""
@@ -765,6 +767,7 @@ def apply_theme(ui_lang):
     html, body, .stApp {{
         font-family: "IBM Plex Sans", "IBM Plex Sans Arabic",
             "Segoe UI", sans-serif;
+        color-scheme: light;
     }}
     .stApp {{
         background: {page};
@@ -802,13 +805,13 @@ def apply_theme(ui_lang):
     .stApp input:not([type="checkbox"]):not([type="radio"]),
     .stApp textarea,
     [data-baseweb="input"] input,
-    [data-baseweb="select"],
-    [data-baseweb="select"] div,
-    [data-baseweb="select"] span,
-    [data-baseweb="textarea"] textarea {{
+    [data-baseweb="textarea"] textarea,
+    [data-testid="stSelectbox"] div,
+    [data-testid="stSelectbox"] span {{
         color: {text} !important;
         -webkit-text-fill-color: {text} !important;
         caret-color: {text};
+        background-color: {paper} !important;
     }}
     .stApp input::placeholder,
     .stApp textarea::placeholder {{
@@ -866,26 +869,32 @@ def apply_theme(ui_lang):
         background: {paper};
         border: 1px solid {card_border} !important;
         border-radius: 12px !important;
-        box-shadow: 0 10px 32px rgba(90, 84, 64, 0.07);
+        box-shadow: 0 8px 28px rgba(74, 74, 74, 0.06);
+    }}
+    .st-key-receipt_frame,
+    [class*="st-key-receipt_frame"] {{
+        background: {paper} !important;
+        border: 1px solid {receipt_border} !important;
+        border-radius: 8px !important;
+        min-height: 560px;
+        padding: 1.1rem !important;
     }}
     [data-testid="stColumn"]:nth-child(2)
     [data-testid="stVerticalBlockBorderWrapper"] {{
         min-height: 680px;
-        border: 1px solid {card_border} !important;
     }}
     .fatoura-empty {{
         color: {muted};
         text-align: center;
-        min-height: 560px;
+        min-height: 520px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 0.9rem;
         font-size: 0.98rem;
-        background: {paper};
-        border: 1px solid {card_border};
-        border-radius: 12px;
+        background: transparent;
+        border: none;
         padding: 2rem 1rem;
     }}
     .fatoura-empty svg {{
@@ -904,7 +913,8 @@ def apply_theme(ui_lang):
     div.stButton > button[kind="primary"] {{
         background-color: {primary};
         border: 1px solid {primary};
-        color: {on_primary};
+        color: {on_primary} !important;
+        -webkit-text-fill-color: {on_primary} !important;
     }}
     div.stButton > button[kind="primary"]:hover {{
         background-color: {primary_hover};
@@ -920,6 +930,7 @@ def apply_theme(ui_lang):
     [data-testid="stFileUploaderDropzone"] button {{
         background-color: {primary} !important;
         color: {on_primary} !important;
+        -webkit-text-fill-color: {on_primary} !important;
         border: none !important;
         border-radius: 8px !important;
         font-weight: 600 !important;
@@ -942,15 +953,14 @@ def apply_theme(ui_lang):
     }}
     div[role="radiogroup"] label {{
         border-radius: 8px !important;
-    }}
-    [data-testid="stRadio"] label {{
         color: {text} !important;
+        -webkit-text-fill-color: {text} !important;
     }}
-    [data-testid="stRadio"] [aria-checked="true"] {{
-        background-color: {primary} !important;
-        color: {on_primary} !important;
-        border-color: {primary} !important;
-        -webkit-text-fill-color: {on_primary} !important;
+    [data-testid="stRadio"] label,
+    [data-testid="stRadio"] p,
+    [data-testid="stRadio"] span {{
+        color: {text} !important;
+        -webkit-text-fill-color: {text} !important;
     }}
     [data-baseweb="radio"] input:checked + div,
     [data-baseweb="checkbox"] input:checked + div {{
@@ -1489,29 +1499,41 @@ with preview_col, st.container(border=True, key="preview_card"):
     )
 
 
+    with st.container(key="receipt_frame"):
+
+        if receipt and pdf_bytes:
+
+            try:
+
+                for page_png in pdf_page_images(pdf_bytes):
+
+                    st.image(
+                        page_png,
+                        use_container_width=True
+                    )
+
+
+            except Exception as preview_error:
+
+                st.info(
+                    f"{t['preview_fail']} {preview_error}"
+                )
+
+
+        else:
+
+            st.markdown(
+                empty_preview_html(t["empty_preview"]),
+                unsafe_allow_html=True
+            )
+
+
     if receipt and pdf_bytes:
 
         receipt_number = receipt.get(
             "receipt_number",
             "unnumbered"
         )
-
-
-        try:
-
-            for page_png in pdf_page_images(pdf_bytes):
-
-                st.image(
-                    page_png,
-                    use_container_width=True
-                )
-
-
-        except Exception as preview_error:
-
-            st.info(
-                f"{t['preview_fail']} {preview_error}"
-            )
 
 
         st.download_button(
@@ -1713,11 +1735,3 @@ with preview_col, st.container(border=True, key="preview_card"):
                 st.caption(
                     t["no_warnings"]
                 )
-
-
-    else:
-
-        st.markdown(
-            empty_preview_html(t["empty_preview"]),
-            unsafe_allow_html=True
-        )
