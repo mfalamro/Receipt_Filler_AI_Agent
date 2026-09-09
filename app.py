@@ -711,7 +711,7 @@ SUBTITLE_AR = (
 
 THEME = {
     "page": "#f4f1ea",
-    "sidebar": "#1a1a1a",
+    "sidebar": "#efebe3",
     "text": "#1c1c1c",
     "muted": "#5c5a52",
     "paper": "#ffffff",
@@ -719,15 +719,15 @@ THEME = {
     "primary": "#7a8048",
     "primary_hover": "#63693b",
     "on_primary": "#f7f4ea",
-    "banner": "#000000",
-    "sidebar_text": "#d8d4c8",
+    "banner": "#f4f1ea",
+    "sidebar_text": "#1c1c1c",
 }
 
 
 def apply_theme(ui_lang):
     """
-    Quiet paper-studio chrome. Olive is an accent on primary
-    buttons only. Hides Streamlit menu, footer and Deploy.
+    Light paper-studio chrome. No black surfaces. Olive is an
+    accent on primary buttons only. Hides Streamlit chrome.
     """
 
     direction = "rtl" if ui_lang == "ar" else "ltr"
@@ -803,9 +803,9 @@ def apply_theme(ui_lang):
     .fatoura-banner {{
         background: {banner};
         margin: -0.75rem -1rem 1.25rem -1rem;
-        padding: 0.7rem 1rem;
+        padding: 0.7rem 1rem 0.85rem 1rem;
         text-align: center;
-        border-bottom: 1px solid {banner};
+        border-bottom: 1px solid {hairline};
     }}
     .fatoura-banner img {{
         max-width: 280px;
@@ -900,25 +900,19 @@ def apply_theme(ui_lang):
     }}
     [data-testid="stSidebar"] {{
         background: {sidebar};
-        border-right: 1px solid {sidebar};
+        border-right: 1px solid {hairline};
         direction: {direction};
         color: {sidebar_text};
     }}
-    [data-testid="stSidebar"] h1,
-    [data-testid="stSidebar"] h2,
-    [data-testid="stSidebar"] h3,
-    [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] p,
-    [data-testid="stSidebar"] span,
-    [data-testid="stSidebar"] .stMarkdown,
-    [data-testid="stSidebar"] .stCaption,
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
-    [data-testid="stSidebar"] [data-testid="stCaptionContainer"],
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{
         color: {sidebar_text} !important;
     }}
+    [data-testid="stSidebar"] [data-testid="stCaptionContainer"] {{
+        color: {muted} !important;
+    }}
     [data-testid="stSidebar"] hr {{
-        border-color: #2e2e2e;
+        border-color: {hairline};
     }}
     [data-testid="stSidebar"] button {{
         border-radius: 2px;
