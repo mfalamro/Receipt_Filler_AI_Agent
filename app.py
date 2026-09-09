@@ -704,8 +704,8 @@ SUBTITLE = (
 
 def apply_theme(ui_lang):
     """
-    Olive page, cream type and buttons. Receipt preview stays on
-    paper. Hides Streamlit's own header, footer, toolbar and Deploy.
+    Light paper studio: warm off-white page, black sidebar, olive
+    only on primary buttons. Hides Streamlit chrome.
     """
 
     direction = "rtl" if ui_lang == "ar" else "ltr"
@@ -723,24 +723,25 @@ def apply_theme(ui_lang):
     div[data-testid="stStatusWidget"] {{display: none !important;}}
     a[href*="streamlit.io"] {{display: none !important;}}
     .stApp {{
-        background: #88825c;
-        color: #f5e7d0;
+        background: #f4f1ea;
+        color: #1c1c1c;
         direction: {direction};
     }}
-    [data-testid="stSidebar"] {{
-        background: #3d3a2e;
-        border-color: #a29c78;
-        direction: {direction};
-        color: #f5e7d0;
+    [data-testid="stAppViewContainer"] {{
+        background: #f4f1ea;
     }}
     .block-container {{
-        padding-top: 1.2rem;
+        padding-top: 1rem;
         max-width: 1400px;
+    }}
+    [data-testid="stCaptionContainer"],
+    .stCaption {{
+        color: #5c5a52 !important;
     }}
     .fatoura-banner {{
         background: #000000;
-        margin: -1.2rem -1rem 1.25rem -1rem;
-        padding: 1.4rem 1rem 1.1rem 1rem;
+        margin: -1rem -1rem 1.1rem -1rem;
+        padding: 1rem 1rem 0.85rem 1rem;
         text-align: center;
     }}
     .fatoura-banner img {{
@@ -751,38 +752,54 @@ def apply_theme(ui_lang):
     }}
     .fatoura-subtitle {{
         text-align: center;
-        color: #f5e7d0;
+        color: #5c5a52;
         font-size: 1.02rem;
         line-height: 1.55;
         margin: 0 0 1.6rem 0;
     }}
     .fatoura-paper {{
-        background: #fffaf3;
-        border: 1px solid #f5e7d0;
+        background: #ffffff;
+        border: 1px solid #e2ddd0;
         border-radius: 10px;
         padding: 1rem;
-        box-shadow: 0 8px 24px rgba(61, 58, 46, 0.18);
+        box-shadow: 0 4px 18px rgba(28, 28, 28, 0.06);
     }}
     .fatoura-empty {{
-        color: #88825c;
+        color: #5c5a52;
         text-align: center;
         padding: 3.5rem 1rem;
     }}
-    h1, h2, h3, label, .stMarkdown, .stCaption,
-    [data-testid="stWidgetLabel"] p,
-    [data-testid="stCaptionContainer"],
-    [data-testid="stSubheader"] {{
-        color: #f5e7d0 !important;
-    }}
     div.stButton > button[kind="primary"] {{
-        background-color: #f5e7d0;
-        border-color: #f5e7d0;
-        color: #3d3a2e;
+        background-color: #7a8048;
+        border-color: #7a8048;
+        color: #f7f4ea;
     }}
     div.stButton > button[kind="primary"]:hover {{
-        background-color: #fffaf3;
-        border-color: #fffaf3;
-        color: #3d3a2e;
+        background-color: #63693b;
+        border-color: #63693b;
+        color: #f7f4ea;
+    }}
+    [data-testid="stSidebar"] {{
+        background: #1a1a1a;
+        border-color: #1a1a1a;
+        direction: {direction};
+        color: #f3efe4;
+    }}
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] span,
+    [data-testid="stSidebar"] .stMarkdown,
+    [data-testid="stSidebar"] .stCaption,
+    [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
+    [data-testid="stSidebar"] [data-testid="stCaptionContainer"],
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{
+        color: #f3efe4 !important;
+    }}
+    [data-testid="stSidebar"] hr {{
+        border-color: #3a3a3a;
     }}
 </style>
         """,
