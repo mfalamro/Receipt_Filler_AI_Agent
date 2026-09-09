@@ -19,15 +19,14 @@ from dotenv import load_dotenv
 
 # WeasyPrint is a Python wrapper around the Pango, HarfBuzz and
 # Cairo C libraries. "pip install weasyprint" always succeeds, but
-# the import fails if those libraries are missing from the machine.
-# That is the single most common way this app fails to start, so it
-# is caught here and reported as a readable message further down,
-# after st.set_page_config() has had its turn.
+# the import fails if those libraries are missing from the machine,
+# or if the API we call was removed in a newer WeasyPrint.
+# The real exception is shown under the error banner.
 
 try:
 
     from weasyprint import HTML
-    from weasyprint.urls import default_url_fetcher
+    from weasyprint.urls import URLFetcher
 
     WEASYPRINT_IMPORT_ERROR = None
 
@@ -35,7 +34,7 @@ try:
 except Exception as weasyprint_error:
 
     HTML = None
-    default_url_fetcher = None
+    URLFetcher = None
 
     WEASYPRINT_IMPORT_ERROR = str(weasyprint_error)
 
@@ -372,22 +371,6 @@ def sanitize_agent_html(markup):
     return cleaned
 
 
-def local_only_url_fetcher(url):
-    """
-    Allow the bundled fonts (file:) and inline images (data:), and
-    refuse anything that would reach out over the network.
-    """
-
-    if url.startswith("file:") or url.startswith("data:"):
-
-        return default_url_fetcher(url)
-
-
-    raise ValueError(
-        f"Remote resources are not allowed in a receipt: {url}"
-    )
-
-
 def build_document(agent_html, language):
     """
     Combine the agent's markup with the app's stylesheet.
@@ -457,12 +440,21 @@ def render_pdf(agent_html, language):
     )
 
 
+    # WeasyPrint 70 replaced the old default_url_fetcher function
+    # with URLFetcher. allowed_protocols keeps the same rule we
+    # had before: bundled fonts (file:) and inline images (data:),
+    # and nothing that would reach out over the network.
+    fetcher = URLFetcher(
+        allowed_protocols=("file", "data")
+    )
+
+
     # The trailing slash matters: without it a relative path in the
     # markup would resolve against the parent directory.
     return HTML(
         string=document,
         base_url=PROJECT_DIR.as_uri() + "/",
-        url_fetcher=local_only_url_fetcher
+        url_fetcher=fetcher
     ).write_pdf()
 
 
@@ -620,14 +612,9 @@ if WEASYPRINT_IMPORT_ERROR:
 
     st.error(
         "WeasyPrint could not be imported, so no PDF can be "
-        "produced. Its Pango, HarfBuzz and Cairo C libraries are "
-        "missing from this machine."
-    )
-
-    st.code(
-        "conda install -c conda-forge "
-        "pango cairo harfbuzz glib fontconfig",
-        language="bash"
+        "produced. The caption below is the real error. On "
+        "Streamlit Cloud this is usually a missing packages.txt "
+        "(Pango/Cairo) or a WeasyPrint API mismatch."
     )
 
     st.caption(
