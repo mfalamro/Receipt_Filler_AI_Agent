@@ -790,11 +790,41 @@ def apply_theme(ui_lang, hide_sidebar=False):
 
     if hide_sidebar:
 
-        hide_sidebar_css = """
+        hide_sidebar_css = f"""
     [data-testid="stSidebar"],
-    [data-testid="stSidebarCollapsedControl"] {
+    [data-testid="stSidebarCollapsedControl"] {{
         display: none !important;
-    }
+    }}
+    .block-container {{
+        padding-top: 1.5rem !important;
+        padding-bottom: 3.5rem !important;
+        max-width: 1080px !important;
+    }}
+    [data-testid="stRadio"] div[role="radiogroup"] {{
+        background: #efebe3;
+        border-radius: 999px;
+        padding: 4px;
+        width: fit-content;
+        gap: 0 !important;
+    }}
+    [data-testid="stRadio"] label {{
+        border-radius: 999px !important;
+        padding: 0.35rem 0.9rem !important;
+        color: {text} !important;
+        -webkit-text-fill-color: {text} !important;
+    }}
+    [data-testid="stRadio"] [aria-checked="true"] {{
+        background-color: {primary} !important;
+        color: {on_primary} !important;
+        -webkit-text-fill-color: {on_primary} !important;
+        border-color: {primary} !important;
+    }}
+    div.stButton > button[kind="primary"] {{
+        border-radius: 999px !important;
+        min-height: 3.1rem;
+        font-size: 1.08rem;
+        padding: 0.7rem 2.6rem !important;
+    }}
 """
 
     st.markdown(
@@ -911,23 +941,87 @@ def apply_theme(ui_lang, hide_sidebar=False):
         max-width: 36rem;
         margin: 0 auto 1.75rem auto;
     }}
-    .fatoura-step-num {{
-        display: block;
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.12em;
+    .fatoura-flow {{
+        max-width: 980px;
+        margin: 2.4rem auto 2.6rem auto;
+    }}
+    .fatoura-flow-track {{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        margin: 0 8% 1.35rem 8%;
+        position: relative;
+    }}
+    .fatoura-flow-track::before {{
+        content: "";
+        position: absolute;
+        left: 8%;
+        right: 8%;
+        top: 50%;
+        border-top: 1px solid {hairline};
+        z-index: 0;
+    }}
+    .fatoura-flow-node {{
+        position: relative;
+        z-index: 1;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 1.5px solid {primary};
+        background: {paper};
         color: {primary};
-        margin-bottom: 0.4rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }}
+    .fatoura-flow-seg {{
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+    }}
+    .fatoura-flow-arrow {{
+        color: {primary};
+        font-size: 1.1rem;
+        background: {page};
+        padding: 0 0.35rem;
+        position: relative;
+        z-index: 1;
+    }}
+    .fatoura-flow-cards {{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1.4rem;
+    }}
+    .fatoura-flow-card {{
+        background: #f4f0e6;
+        border-radius: 18px;
+        padding: 1.45rem 1.2rem 1.5rem 1.2rem;
+        text-align: center;
+        box-shadow: 0 10px 28px rgba(74, 74, 74, 0.06);
+    }}
+    .fatoura-flow-card svg {{
+        width: 36px;
+        height: 36px;
+        stroke: {primary};
+        fill: none;
+        margin-bottom: 0.7rem;
     }}
     .fatoura-step-title {{
-        font-size: 1.05rem;
+        font-size: 1.02rem;
         font-weight: 600;
         color: {text};
-        margin: 0 0 0.35rem 0;
+        margin: 0 0 0.4rem 0;
     }}
     .fatoura-step-body {{
         color: {muted};
-        font-size: 0.92rem;
+        font-size: 0.9rem;
         line-height: 1.5;
         margin: 0;
     }}
@@ -1096,6 +1190,73 @@ def empty_preview_html(message):
         'd="M14.5 3.5V8H19M9 12h6M9 15.5h6"/>'
         "</svg>"
         f"<p>{message}</p>"
+        "</div>"
+    )
+
+
+# =========================================================
+# LANDING FLOW
+# =========================================================
+
+def landing_flow_html(t):
+    icon_template = (
+        '<svg viewBox="0 0 24 24" aria-hidden="true">'
+        '<path stroke-width="1.5" stroke-linecap="round" '
+        'stroke-linejoin="round" d="M7 3.5h7.5L19 8v12.5H7z"/>'
+        '<path stroke-width="1.5" stroke-linecap="round" '
+        'd="M14.5 3.5V8H19M9 12h6M9 15.5h4"/>'
+        "</svg>"
+    )
+
+    icon_fields = (
+        '<svg viewBox="0 0 24 24" aria-hidden="true">'
+        '<rect x="4.5" y="4.5" width="15" height="15" rx="2" '
+        'stroke-width="1.5"/>'
+        '<path stroke-width="1.5" stroke-linecap="round" '
+        'd="M8 9h8M8 12.5h5.5M8 16h3"/>'
+        "</svg>"
+    )
+
+    icon_download = (
+        '<svg viewBox="0 0 24 24" aria-hidden="true">'
+        '<path stroke-width="1.5" stroke-linecap="round" '
+        'stroke-linejoin="round" d="M7 3.5h7.5L19 8v12.5H7z"/>'
+        '<path stroke-width="1.5" stroke-linecap="round" '
+        'stroke-linejoin="round" d="M12 11v5.5M9.5 14.5L12 17l2.5-2.5"/>'
+        "</svg>"
+    )
+
+    cards = [
+        (icon_template, t["landing_step_1_title"], t["landing_step_1_body"]),
+        (icon_fields, t["landing_step_2_title"], t["landing_step_2_body"]),
+        (icon_download, t["landing_step_3_title"], t["landing_step_3_body"]),
+    ]
+
+    card_markup = "".join(
+        '<div class="fatoura-flow-card">'
+        f"{icon}"
+        f'<p class="fatoura-step-title">{title}</p>'
+        f'<p class="fatoura-step-body">{body}</p>'
+        "</div>"
+        for icon, title, body in cards
+    )
+
+    return (
+        '<div class="fatoura-flow">'
+        '<div class="fatoura-flow-track">'
+        '<div class="fatoura-flow-seg">'
+        '<span class="fatoura-flow-node">01</span>'
+        "</div>"
+        '<span class="fatoura-flow-arrow">›</span>'
+        '<div class="fatoura-flow-seg">'
+        '<span class="fatoura-flow-node">02</span>'
+        "</div>"
+        '<span class="fatoura-flow-arrow">›</span>'
+        '<div class="fatoura-flow-seg">'
+        '<span class="fatoura-flow-node">03</span>'
+        "</div>"
+        "</div>"
+        f'<div class="fatoura-flow-cards">{card_markup}</div>'
         "</div>"
     )
 
@@ -1840,12 +2001,25 @@ def run_landing():
         else "en"
     )
 
-    t = UI_COPY[ui_lang]
-
     apply_theme(
         ui_lang,
         hide_sidebar=True
     )
+
+    ui_choice = st.radio(
+        "App language / لغة التطبيق",
+        ["English", "العربية"],
+        horizontal=True,
+        key="ui_language_choice"
+    )
+
+    ui_lang = (
+        "ar"
+        if ui_choice == "العربية"
+        else "en"
+    )
+
+    t = UI_COPY[ui_lang]
 
     if APP_LOGO_PATH.exists():
 
@@ -1863,54 +2037,9 @@ def run_landing():
     )
 
     st.markdown(
-        f'<p class="fatoura-landing-lead">{t["landing_lead"]}</p>',
+        landing_flow_html(t),
         unsafe_allow_html=True
     )
-
-    lang_col = st.columns(
-        [1, 1, 1]
-    )[1]
-
-    with lang_col:
-
-        ui_choice = st.radio(
-            "App language / لغة التطبيق",
-            ["English", "العربية"],
-            horizontal=True,
-            key="ui_language_choice"
-        )
-
-    ui_lang = (
-        "ar"
-        if ui_choice == "العربية"
-        else "en"
-    )
-
-    t = UI_COPY[ui_lang]
-
-    step1, step2, step3 = st.columns(
-        3,
-        gap="large"
-    )
-
-    steps = [
-        (step1, "01", "landing_step_1_title", "landing_step_1_body"),
-        (step2, "02", "landing_step_2_title", "landing_step_2_body"),
-        (step3, "03", "landing_step_3_title", "landing_step_3_body"),
-    ]
-
-    for column, number, title_key, body_key in steps:
-
-        with column, st.container(border=True):
-
-            st.markdown(
-                f'<span class="fatoura-step-num">{number}</span>'
-                f'<p class="fatoura-step-title">{t[title_key]}</p>'
-                f'<p class="fatoura-step-body">{t[body_key]}</p>',
-                unsafe_allow_html=True
-            )
-
-    st.write("")
 
     center = st.columns(
         [1, 1, 1]
