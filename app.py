@@ -695,17 +695,20 @@ VAT_LABELS = {
 }
 
 
-SUBTITLE = (
+SUBTITLE_EN = (
     "Choose a template, type your fields and generate your "
-    "downloadable receipt. | اختر قالبًا، وأدخل بياناتك، ثم أنشئ "
-    "فاتورتك وحمّلها."
+    "downloadable receipt."
+)
+
+SUBTITLE_AR = (
+    "اختر قالبًا، وأدخل بياناتك، ثم أنشئ فاتورتك وحمّلها."
 )
 
 
 def apply_theme(ui_lang):
     """
-    Light paper studio: warm off-white page, black sidebar, olive
-    only on primary buttons. Hides Streamlit chrome.
+    Quiet paper-studio chrome. Olive is an accent on primary
+    buttons only. Hides Streamlit menu, footer and Deploy.
     """
 
     direction = "rtl" if ui_lang == "ar" else "ltr"
@@ -713,6 +716,8 @@ def apply_theme(ui_lang):
     st.markdown(
         f"""
 <style>
+    @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap");
+
     #MainMenu {{visibility: hidden;}}
     header[data-testid="stHeader"] {{display: none !important;}}
     footer {{visibility: hidden;}}
@@ -722,6 +727,10 @@ def apply_theme(ui_lang):
     div[data-testid="stDecoration"] {{display: none !important;}}
     div[data-testid="stStatusWidget"] {{display: none !important;}}
     a[href*="streamlit.io"] {{display: none !important;}}
+    html, body, .stApp {{
+        font-family: "IBM Plex Sans", "IBM Plex Sans Arabic",
+            "Segoe UI", sans-serif;
+    }}
     .stApp {{
         background: #f4f1ea;
         color: #1c1c1c;
@@ -731,21 +740,37 @@ def apply_theme(ui_lang):
         background: #f4f1ea;
     }}
     .block-container {{
-        padding-top: 1rem;
-        max-width: 1400px;
+        padding-top: 0.75rem;
+        padding-bottom: 2.5rem;
+        max-width: 1180px;
     }}
     [data-testid="stCaptionContainer"],
     .stCaption {{
         color: #5c5a52 !important;
+        font-size: 0.8rem;
+    }}
+    [data-testid="stSubheader"] {{
+        font-size: 0.72rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #5c5a52 !important;
+        margin-bottom: 0.35rem !important;
+    }}
+    [data-testid="stWidgetLabel"] p {{
+        font-size: 0.84rem;
+        font-weight: 500;
+        color: #1c1c1c;
     }}
     .fatoura-banner {{
         background: #000000;
-        margin: -1rem -1rem 1.1rem -1rem;
-        padding: 1rem 1rem 0.85rem 1rem;
+        margin: -0.75rem -1rem 1.25rem -1rem;
+        padding: 0.7rem 1rem;
         text-align: center;
+        border-bottom: 1px solid #000000;
     }}
     .fatoura-banner img {{
-        max-width: min(720px, 100%);
+        max-width: 280px;
         width: 100%;
         height: auto;
         display: inline-block;
@@ -753,25 +778,40 @@ def apply_theme(ui_lang):
     .fatoura-subtitle {{
         text-align: center;
         color: #5c5a52;
-        font-size: 1.02rem;
+        font-size: 0.88rem;
         line-height: 1.55;
-        margin: 0 0 1.6rem 0;
+        margin: 0 0 1.75rem 0;
+        letter-spacing: 0.01em;
+    }}
+    .fatoura-subtitle span {{
+        display: block;
+    }}
+    .fatoura-subtitle span + span {{
+        margin-top: 0.2rem;
+        font-family: "IBM Plex Sans Arabic", "IBM Plex Sans", sans-serif;
     }}
     .fatoura-paper {{
         background: #ffffff;
         border: 1px solid #e2ddd0;
-        border-radius: 10px;
-        padding: 1rem;
-        box-shadow: 0 4px 18px rgba(28, 28, 28, 0.06);
+        border-radius: 2px;
+        padding: 0.85rem;
+        box-shadow: none;
     }}
     .fatoura-empty {{
         color: #5c5a52;
         text-align: center;
-        padding: 3.5rem 1rem;
+        padding: 4rem 1rem;
+        font-size: 0.9rem;
+        letter-spacing: 0.02em;
+    }}
+    div.stButton > button {{
+        border-radius: 2px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
     }}
     div.stButton > button[kind="primary"] {{
         background-color: #7a8048;
-        border-color: #7a8048;
+        border: 1px solid #7a8048;
         color: #f7f4ea;
     }}
     div.stButton > button[kind="primary"]:hover {{
@@ -779,9 +819,29 @@ def apply_theme(ui_lang):
         border-color: #63693b;
         color: #f7f4ea;
     }}
+    [data-testid="stFileUploaderDropzone"] {{
+        background: #ffffff;
+        border: 1px solid #e2ddd0;
+        border-radius: 2px;
+    }}
+    [data-testid="stTextInput"] input,
+    [data-testid="stNumberInput"] input,
+    [data-testid="stTextArea"] textarea,
+    [data-testid="stSelectbox"] > div {{
+        border-radius: 2px;
+        background: #ffffff;
+    }}
+    div[role="radiogroup"] label {{
+        border-radius: 2px !important;
+    }}
+    [data-testid="stExpander"] {{
+        border: 1px solid #e2ddd0;
+        border-radius: 2px;
+        background: #ffffff;
+    }}
     [data-testid="stSidebar"] {{
         background: #1a1a1a;
-        border-color: #1a1a1a;
+        border-right: 1px solid #1a1a1a;
         direction: {direction};
         color: #f3efe4;
     }}
@@ -796,10 +856,13 @@ def apply_theme(ui_lang):
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
     [data-testid="stSidebar"] [data-testid="stCaptionContainer"],
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{
-        color: #f3efe4 !important;
+        color: #d8d4c8 !important;
     }}
     [data-testid="stSidebar"] hr {{
-        border-color: #3a3a3a;
+        border-color: #2e2e2e;
+    }}
+    [data-testid="stSidebar"] button {{
+        border-radius: 2px;
     }}
 </style>
         """,
@@ -883,7 +946,7 @@ with st.sidebar:
 
         st.image(
             str(SIDE_LOGO_PATH),
-            width=72
+            width=40
         )
 
 
@@ -991,7 +1054,10 @@ if APP_LOGO_PATH.exists():
 
 
 st.markdown(
-    f'<p class="fatoura-subtitle">{SUBTITLE}</p>',
+    '<p class="fatoura-subtitle">'
+    f"<span>{SUBTITLE_EN}</span>"
+    f"<span>{SUBTITLE_AR}</span>"
+    "</p>",
     unsafe_allow_html=True
 )
 
@@ -1002,7 +1068,7 @@ st.markdown(
 
 compose_col, preview_col = st.columns(
     [1, 1],
-    gap="large"
+    gap="medium"
 )
 
 
