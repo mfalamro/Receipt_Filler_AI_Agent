@@ -860,8 +860,8 @@ def apply_theme(ui_lang, hide_sidebar=False):
         background: {page};
     }}
     .block-container {{
-        padding-top: 0.9rem;
-        padding-bottom: 2.75rem;
+        padding-top: 5rem;
+        padding-bottom: 3.5rem;
         max-width: 1320px;
     }}
     [data-testid="stCaptionContainer"],
