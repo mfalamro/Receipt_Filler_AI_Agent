@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<!--
+  Reference receipt template.
+
+  This file is a WORKED EXAMPLE, not a placeholder file. The n8n AI Agent
+  reads the rendered PDF (page images + extracted text) and writes a new
+  document in the same structure and style, so a filled-in example teaches
+  it more than {{ placeholders }} would.
+
+  To make your own template: copy this file, edit it, print it to PDF, and
+  drop the PDF in this folder. Keep it deliberately plain -- the simpler the
+  structure, the more reliably the agent reproduces it.
+
+  app.py supplies the page size, margins, fonts and text direction, so a
+  template does not need to set them.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Receipt</title>
+<style>
+  body {
+    font-size: 11pt;
+    color: #1a1a1a;
+  }
+
+  /* Header: who issued the receipt, and which receipt it is. */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 8mm;
+    margin-bottom: 8mm;
+  }
+
+  .seller-name {
+    font-size: 16pt;
+    font-weight: bold;
+    margin: 0 0 2mm 0;
+  }
+
+  .seller-detail,
+  .meta-row {
+    margin: 0 0 1mm 0;
+  }
+
+  .doc-title {
+    font-size: 13pt;
+    font-weight: bold;
+    margin: 0 0 3mm 0;
+  }
+
+  .meta {
+    text-align: right;
+  }
+
+  .label {
+    color: #666666;
+  }
+
+  /* Buyer block. */
+  .buyer {
+    margin-bottom: 8mm;
+  }
+
+  .section-heading {
+    font-size: 9pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5pt;
+    color: #666666;
+    margin: 0 0 2mm 0;
+  }
+
+  /* Line items. */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8mm;
+  }
+
+  th {
+    text-align: left;
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5pt;
+    border-bottom: 1px solid #1a1a1a;
+    padding: 2mm 2mm 2mm 0;
+  }
+
+  td {
+    padding: 2mm 2mm 2mm 0;
+    border-bottom: 1px solid #dddddd;
+  }
+
+  .num {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* Totals, right-aligned and narrow so it reads as a summary. */
+  .totals {
+    width: 70mm;
+    margin-left: auto;
+    margin-bottom: 8mm;
+  }
+
+  .totals td {
+    border: none;
+    padding: 1.5mm 0;
+  }
+
+  .totals .grand td {
+    border-top: 2px solid #1a1a1a;
+    font-weight: bold;
+    font-size: 12pt;
+    padding-top: 2.5mm;
+  }
+
+  /* Footer: payment, notes, signature. */
+  .footer {
+    border-top: 1px solid #dddddd;
+    padding-top: 6mm;
+    font-size: 10pt;
+  }
+
+  .signature {
+    margin-top: 12mm;
+    width: 60mm;
+    border-top: 1px solid #1a1a1a;
+    padding-top: 2mm;
+    font-size: 9pt;
+    color: #666666;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div>
+      <p class="seller-name">Tuwaiq Trading Est.</p>
+      <p class="seller-detail">Riyadh, Saudi Arabia</p>
+      <p class="seller-detail">+966 11 234 5678</p>
+      <p class="seller-detail"><span class="label">VAT No.</span> 300012345600003</p>
+    </div>
+    <div class="meta">
+      <p class="doc-title">Tax Invoice</p>
+      <p class="meta-row"><span class="label">Receipt No.</span> INV-0001</p>
+      <p class="meta-row"><span class="label">Date</span> 09/09/2026</p>
+    </div>
+  </div>
+
+  <div class="buyer">
+    <p class="section-heading">Billed To</p>
+    <p class="seller-detail">Acme Company</p>
+    <p class="seller-detail"><span class="label">VAT No.</span> 310098765400003</p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th class="num">Qty</th>
+        <th class="num">Unit Price</th>
+        <th class="num">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Mechanical keyboard</td>
+        <td class="num">3</td>
+        <td class="num">120.00</td>
+        <td class="num">360.00</td>
+      </tr>
+      <tr>
+        <td>USB-C cable, 2 m</td>
+        <td class="num">2</td>
+        <td class="num">35.00</td>
+        <td class="num">70.00</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class="totals">
+    <tr>
+      <td>Subtotal</td>
+      <td class="num">430.00 SAR</td>
+    </tr>
+    <tr>
+      <td>VAT (15%)</td>
+      <td class="num">64.50 SAR</td>
+    </tr>
+    <tr class="grand">
+      <td>Total</td>
+      <td class="num">494.50 SAR</td>
+    </tr>
+  </table>
+
+  <div class="footer">
+    <p class="meta-row"><span class="label">Payment method</span> Cash</p>
+    <p class="meta-row"><span class="label">Notes</span> Thank you for your business.</p>
+    <div class="signature">Authorized signature</div>
+  </div>
+
+</body>
+</html>
