@@ -722,6 +722,7 @@ THEME = {
     "banner": "#faf9f6",
     "sidebar_text": "#3a372f",
     "radius": "10px",
+    "card_border": "#cfc8b8",
 }
 
 
@@ -745,6 +746,7 @@ def apply_theme(ui_lang):
     banner = THEME["banner"]
     sidebar_text = THEME["sidebar_text"]
     radius = THEME["radius"]
+    card_border = THEME["card_border"]
 
     st.markdown(
         f"""
@@ -795,7 +797,24 @@ def apply_theme(ui_lang):
     [data-testid="stWidgetLabel"] p {{
         font-size: 0.9rem;
         font-weight: 500;
-        color: {text};
+        color: {text} !important;
+    }}
+    .stApp input:not([type="checkbox"]):not([type="radio"]),
+    .stApp textarea,
+    [data-baseweb="input"] input,
+    [data-baseweb="select"],
+    [data-baseweb="select"] div,
+    [data-baseweb="select"] span,
+    [data-baseweb="textarea"] textarea {{
+        color: {text} !important;
+        -webkit-text-fill-color: {text} !important;
+        caret-color: {text};
+    }}
+    .stApp input::placeholder,
+    .stApp textarea::placeholder {{
+        color: {muted} !important;
+        -webkit-text-fill-color: {muted} !important;
+        opacity: 1 !important;
     }}
     .stApp a {{
         color: {primary};
@@ -835,14 +854,24 @@ def apply_theme(ui_lang):
     }}
     [data-testid="stVerticalBlockBorderWrapper"] {{
         background: {paper};
-        border: 1px solid rgba(90, 84, 64, 0.08) !important;
+        border: 1px solid {card_border} !important;
         border-radius: 12px !important;
         box-shadow: 0 10px 32px rgba(90, 84, 64, 0.07);
         padding: 1.4rem 1.55rem 1.65rem;
     }}
+    .st-key-compose_card,
+    .st-key-preview_card,
+    [class*="st-key-compose_card"],
+    [class*="st-key-preview_card"] {{
+        background: {paper};
+        border: 1px solid {card_border} !important;
+        border-radius: 12px !important;
+        box-shadow: 0 10px 32px rgba(90, 84, 64, 0.07);
+    }}
     [data-testid="stColumn"]:nth-child(2)
     [data-testid="stVerticalBlockBorderWrapper"] {{
         min-height: 680px;
+        border: 1px solid {card_border} !important;
     }}
     .fatoura-empty {{
         color: {muted};
@@ -854,6 +883,10 @@ def apply_theme(ui_lang):
         justify-content: center;
         gap: 0.9rem;
         font-size: 0.98rem;
+        background: {paper};
+        border: 1px solid {card_border};
+        border-radius: 12px;
+        padding: 2rem 1rem;
     }}
     .fatoura-empty svg {{
         width: 54px;
@@ -896,8 +929,10 @@ def apply_theme(ui_lang):
     [data-testid="stTextArea"] textarea,
     [data-testid="stSelectbox"] > div {{
         border-radius: {radius};
-        background: {paper};
+        background: {paper} !important;
         border-color: {hairline};
+        color: {text} !important;
+        -webkit-text-fill-color: {text} !important;
     }}
     [data-testid="stTextInput"] input:focus,
     [data-testid="stNumberInput"] input:focus,
@@ -908,10 +943,14 @@ def apply_theme(ui_lang):
     div[role="radiogroup"] label {{
         border-radius: 8px !important;
     }}
+    [data-testid="stRadio"] label {{
+        color: {text} !important;
+    }}
     [data-testid="stRadio"] [aria-checked="true"] {{
         background-color: {primary} !important;
         color: {on_primary} !important;
         border-color: {primary} !important;
+        -webkit-text-fill-color: {on_primary} !important;
     }}
     [data-baseweb="radio"] input:checked + div,
     [data-baseweb="checkbox"] input:checked + div {{
@@ -1164,7 +1203,7 @@ compose_col, preview_col = st.columns(
 )
 
 
-with compose_col, st.container(border=True):
+with compose_col, st.container(border=True, key="compose_card"):
 
     st.markdown(
         f'<p class="fatoura-card-title">{t["template"]}</p>',
@@ -1439,7 +1478,7 @@ with compose_col, st.container(border=True):
                 )
 
 
-with preview_col, st.container(border=True):
+with preview_col, st.container(border=True, key="preview_card"):
 
     receipt = st.session_state.get(
         "receipt"
