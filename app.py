@@ -704,8 +704,8 @@ SUBTITLE = (
 
 def apply_theme(ui_lang):
     """
-    Cream and olive chrome. Hides Streamlit's own header, footer,
-    toolbar and Deploy button.
+    Olive page, cream type and buttons. Receipt preview stays on
+    paper. Hides Streamlit's own header, footer, toolbar and Deploy.
     """
 
     direction = "rtl" if ui_lang == "ar" else "ltr"
@@ -723,12 +723,15 @@ def apply_theme(ui_lang):
     div[data-testid="stStatusWidget"] {{display: none !important;}}
     a[href*="streamlit.io"] {{display: none !important;}}
     .stApp {{
-        background: #f5e7d0;
-        color: #3d3a2e;
+        background: #88825c;
+        color: #f5e7d0;
         direction: {direction};
     }}
     [data-testid="stSidebar"] {{
+        background: #3d3a2e;
+        border-color: #a29c78;
         direction: {direction};
+        color: #f5e7d0;
     }}
     .block-container {{
         padding-top: 1.2rem;
@@ -748,36 +751,38 @@ def apply_theme(ui_lang):
     }}
     .fatoura-subtitle {{
         text-align: center;
-        color: #3d3a2e;
+        color: #f5e7d0;
         font-size: 1.02rem;
         line-height: 1.55;
         margin: 0 0 1.6rem 0;
     }}
     .fatoura-paper {{
         background: #fffaf3;
-        border: 1px solid #a29c78;
+        border: 1px solid #f5e7d0;
         border-radius: 10px;
         padding: 1rem;
-        box-shadow: 0 8px 24px rgba(61, 58, 46, 0.08);
+        box-shadow: 0 8px 24px rgba(61, 58, 46, 0.18);
     }}
     .fatoura-empty {{
         color: #88825c;
         text-align: center;
         padding: 3.5rem 1rem;
     }}
-    div.stButton > button[kind="primary"] {{
-        background-color: #88825c;
-        border-color: #88825c;
-        color: #fffaf3;
+    h1, h2, h3, label, .stMarkdown, .stCaption,
+    [data-testid="stWidgetLabel"] p,
+    [data-testid="stCaptionContainer"],
+    [data-testid="stSubheader"] {{
+        color: #f5e7d0 !important;
     }}
-    div.stButton > button[kind="primary"]:hover {{
-        background-color: #a29c78;
-        border-color: #a29c78;
+    div.stButton > button[kind="primary"] {{
+        background-color: #f5e7d0;
+        border-color: #f5e7d0;
         color: #3d3a2e;
     }}
-    [data-testid="stSidebar"] {{
-        background: #f5e7d0;
-        border-color: #a29c78;
+    div.stButton > button[kind="primary"]:hover {{
+        background-color: #fffaf3;
+        border-color: #fffaf3;
+        color: #3d3a2e;
     }}
 </style>
         """,
