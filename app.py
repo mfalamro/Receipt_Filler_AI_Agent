@@ -705,6 +705,25 @@ SUBTITLE_AR = (
 )
 
 
+# Palette and chrome used to live in .streamlit/config.toml.
+# Streamlit has no Python API for that file, so the same values
+# are applied here as CSS. Nothing in .streamlit is required.
+
+THEME = {
+    "page": "#f4f1ea",
+    "sidebar": "#1a1a1a",
+    "text": "#1c1c1c",
+    "muted": "#5c5a52",
+    "paper": "#ffffff",
+    "hairline": "#e2ddd0",
+    "primary": "#7a8048",
+    "primary_hover": "#63693b",
+    "on_primary": "#f7f4ea",
+    "banner": "#000000",
+    "sidebar_text": "#d8d4c8",
+}
+
+
 def apply_theme(ui_lang):
     """
     Quiet paper-studio chrome. Olive is an accent on primary
@@ -712,6 +731,18 @@ def apply_theme(ui_lang):
     """
 
     direction = "rtl" if ui_lang == "ar" else "ltr"
+
+    page = THEME["page"]
+    sidebar = THEME["sidebar"]
+    text = THEME["text"]
+    muted = THEME["muted"]
+    paper = THEME["paper"]
+    hairline = THEME["hairline"]
+    primary = THEME["primary"]
+    primary_hover = THEME["primary_hover"]
+    on_primary = THEME["on_primary"]
+    banner = THEME["banner"]
+    sidebar_text = THEME["sidebar_text"]
 
     st.markdown(
         f"""
@@ -732,12 +763,16 @@ def apply_theme(ui_lang):
             "Segoe UI", sans-serif;
     }}
     .stApp {{
-        background: #f4f1ea;
-        color: #1c1c1c;
+        background: {page};
+        color: {text};
         direction: {direction};
+        --primary-color: {primary};
+        --background-color: {page};
+        --secondary-background-color: {paper};
+        --text-color: {text};
     }}
     [data-testid="stAppViewContainer"] {{
-        background: #f4f1ea;
+        background: {page};
     }}
     .block-container {{
         padding-top: 0.75rem;
@@ -746,7 +781,7 @@ def apply_theme(ui_lang):
     }}
     [data-testid="stCaptionContainer"],
     .stCaption {{
-        color: #5c5a52 !important;
+        color: {muted} !important;
         font-size: 0.8rem;
     }}
     [data-testid="stSubheader"] {{
@@ -754,20 +789,23 @@ def apply_theme(ui_lang):
         font-weight: 600 !important;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: #5c5a52 !important;
+        color: {muted} !important;
         margin-bottom: 0.35rem !important;
     }}
     [data-testid="stWidgetLabel"] p {{
         font-size: 0.84rem;
         font-weight: 500;
-        color: #1c1c1c;
+        color: {text};
+    }}
+    .stApp a {{
+        color: {primary};
     }}
     .fatoura-banner {{
-        background: #000000;
+        background: {banner};
         margin: -0.75rem -1rem 1.25rem -1rem;
         padding: 0.7rem 1rem;
         text-align: center;
-        border-bottom: 1px solid #000000;
+        border-bottom: 1px solid {banner};
     }}
     .fatoura-banner img {{
         max-width: 280px;
@@ -777,7 +815,7 @@ def apply_theme(ui_lang):
     }}
     .fatoura-subtitle {{
         text-align: center;
-        color: #5c5a52;
+        color: {muted};
         font-size: 0.88rem;
         line-height: 1.55;
         margin: 0 0 1.75rem 0;
@@ -791,14 +829,14 @@ def apply_theme(ui_lang):
         font-family: "IBM Plex Sans Arabic", "IBM Plex Sans", sans-serif;
     }}
     .fatoura-paper {{
-        background: #ffffff;
-        border: 1px solid #e2ddd0;
+        background: {paper};
+        border: 1px solid {hairline};
         border-radius: 2px;
         padding: 0.85rem;
         box-shadow: none;
     }}
     .fatoura-empty {{
-        color: #5c5a52;
+        color: {muted};
         text-align: center;
         padding: 4rem 1rem;
         font-size: 0.9rem;
@@ -810,18 +848,18 @@ def apply_theme(ui_lang):
         letter-spacing: 0.02em;
     }}
     div.stButton > button[kind="primary"] {{
-        background-color: #7a8048;
-        border: 1px solid #7a8048;
-        color: #f7f4ea;
+        background-color: {primary};
+        border: 1px solid {primary};
+        color: {on_primary};
     }}
     div.stButton > button[kind="primary"]:hover {{
-        background-color: #63693b;
-        border-color: #63693b;
-        color: #f7f4ea;
+        background-color: {primary_hover};
+        border-color: {primary_hover};
+        color: {on_primary};
     }}
     [data-testid="stFileUploaderDropzone"] {{
-        background: #ffffff;
-        border: 1px solid #e2ddd0;
+        background: {paper};
+        border: 1px solid {hairline};
         border-radius: 2px;
     }}
     [data-testid="stTextInput"] input,
@@ -829,21 +867,42 @@ def apply_theme(ui_lang):
     [data-testid="stTextArea"] textarea,
     [data-testid="stSelectbox"] > div {{
         border-radius: 2px;
-        background: #ffffff;
+        background: {paper};
+    }}
+    [data-testid="stTextInput"] input:focus,
+    [data-testid="stNumberInput"] input:focus,
+    [data-testid="stTextArea"] textarea:focus {{
+        border-color: {primary};
+        box-shadow: 0 0 0 1px {primary};
     }}
     div[role="radiogroup"] label {{
         border-radius: 2px !important;
     }}
+    [data-testid="stRadio"] [aria-checked="true"] {{
+        background-color: {primary} !important;
+        color: {on_primary} !important;
+        border-color: {primary} !important;
+    }}
+    [data-baseweb="radio"] input:checked + div,
+    [data-baseweb="checkbox"] input:checked + div {{
+        background-color: {primary} !important;
+        border-color: {primary} !important;
+    }}
+    [data-testid="stSlider"] [role="slider"],
+    [data-testid="stSlider"] div[data-baseweb="slider"] div {{
+        background-color: {primary} !important;
+        border-color: {primary} !important;
+    }}
     [data-testid="stExpander"] {{
-        border: 1px solid #e2ddd0;
+        border: 1px solid {hairline};
         border-radius: 2px;
-        background: #ffffff;
+        background: {paper};
     }}
     [data-testid="stSidebar"] {{
-        background: #1a1a1a;
-        border-right: 1px solid #1a1a1a;
+        background: {sidebar};
+        border-right: 1px solid {sidebar};
         direction: {direction};
-        color: #f3efe4;
+        color: {sidebar_text};
     }}
     [data-testid="stSidebar"] h1,
     [data-testid="stSidebar"] h2,
@@ -856,7 +915,7 @@ def apply_theme(ui_lang):
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
     [data-testid="stSidebar"] [data-testid="stCaptionContainer"],
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{
-        color: #d8d4c8 !important;
+        color: {sidebar_text} !important;
     }}
     [data-testid="stSidebar"] hr {{
         border-color: #2e2e2e;
