@@ -708,15 +708,15 @@ UI_COPY = {
         ),
         "landing_step_1_title": "اختر قالباً",
         "landing_step_1_body": (
-            "ارفع ملف PDF أو اختر قالبًا من المكتبة."
+            "ارفع ملف PDF أو اختر من المكتبة."
         ),
-        "landing_step_2_title": "ادخل بيانات الفاتورة",
+        "landing_step_2_title": "صف البيانات",
         "landing_step_2_body": (
-            "أضف بيانات البائع والمشتري والأسعار."
+            "اكتب البائع والمشتري والبنود والمبالغ بأسلوبك."
         ),
-        "landing_step_3_title": "أنشئ الفاتورة وحمّلها",
+        "landing_step_3_title": "أنشئ ونزّل",
         "landing_step_3_body": (
-            "ينشئ المساعد الفاتورة، ويمكنك معاينتها أو تحميلها أو إرسالها عبر البريد الإلكتروني."
+            "يكتب الوكيل الفاتورة. تعاينها ثم تنزّلها أو ترسلها."
         ),
     },
 }
@@ -911,6 +911,16 @@ def apply_theme(ui_lang, hide_sidebar=False):
         width: 100%;
         height: auto;
         display: inline-block;
+    }}
+    [data-testid="stSidebar"] .fatoura-sidebar-brand {{
+        margin: 0.15rem 0 1rem 0;
+        text-align: left;
+    }}
+    [data-testid="stSidebar"] .fatoura-sidebar-brand img {{
+        max-width: 100%;
+        width: 200px;
+        height: auto;
+        display: block;
     }}
     .fatoura-subtitle {{
         text-align: center;
@@ -1180,6 +1190,19 @@ def banner_html():
     )
 
 
+def sidebar_brand_html():
+    encoded = base64.b64encode(
+        APP_LOGO_PATH.read_bytes()
+    ).decode("ascii")
+
+    return (
+        '<div class="fatoura-sidebar-brand">'
+        f'<img src="data:image/png;base64,{encoded}" '
+        'alt="fatoura | فاتورة">'
+        "</div>"
+    )
+
+
 def empty_preview_html(message):
     return (
         '<div class="fatoura-empty">'
@@ -1329,11 +1352,11 @@ def run_filler():
 
     with st.sidebar:
 
-        if SIDE_LOGO_PATH.exists():
+        if APP_LOGO_PATH.exists():
 
-            st.image(
-                str(SIDE_LOGO_PATH),
-                width=48
+            st.markdown(
+                sidebar_brand_html(),
+                unsafe_allow_html=True
             )
 
 
@@ -1355,6 +1378,8 @@ def run_filler():
 
         if st.button(
             t["home"],
+            type="primary",
+            use_container_width=True,
             key="nav_home"
         ):
 
@@ -1436,27 +1461,6 @@ def run_filler():
 
 
     apply_theme(ui_lang)
-
-
-    # =========================================================
-    # BANNER
-    # =========================================================
-
-    if APP_LOGO_PATH.exists():
-
-        st.markdown(
-            banner_html(),
-            unsafe_allow_html=True
-        )
-
-
-    st.markdown(
-        '<p class="fatoura-subtitle">'
-        f"<span>{SUBTITLE_EN}</span>"
-        f"<span>{SUBTITLE_AR}</span>"
-        "</p>",
-        unsafe_allow_html=True
-    )
 
 
     # =========================================================
