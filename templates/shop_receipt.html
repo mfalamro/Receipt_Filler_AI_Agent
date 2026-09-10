@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<!--
+  Shop receipt template.
+
+  A worked example, not placeholders. The n8n agent reads the
+  rendered PDF and copies this structure and style. Drop the PDF
+  in this folder; the Streamlit picker lists every *.pdf here.
+
+  This one is a compact retail slip so it is visually distinct
+  from reference_receipt.pdf (the A4 tax invoice).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shop Receipt</title>
+<style>
+  body {
+    font-size: 10.5pt;
+    color: #3a3a3a;
+    background: #ffffff;
+  }
+
+  .slip {
+    width: 148mm;
+    margin: 0 auto;
+    border: 1px solid #d8d2c4;
+    padding: 0;
+  }
+
+  .banner {
+    background: #7d845a;
+    color: #fdfbf7;
+    text-align: center;
+    padding: 8mm 8mm 7mm;
+  }
+
+  .shop-name {
+    font-size: 16pt;
+    font-weight: bold;
+    margin: 0 0 2mm 0;
+    letter-spacing: 0.4pt;
+  }
+
+  .shop-detail {
+    margin: 0 0 1mm 0;
+    font-size: 9.5pt;
+    opacity: 0.95;
+  }
+
+  .doc-title {
+    margin: 4mm 0 0 0;
+    font-size: 11pt;
+    font-weight: bold;
+    letter-spacing: 1.4pt;
+    text-transform: uppercase;
+  }
+
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    padding: 4mm 8mm;
+    background: #f5f0e8;
+    font-size: 9.5pt;
+  }
+
+  .meta p {
+    margin: 0;
+  }
+
+  .label {
+    color: #7a7468;
+  }
+
+  .body {
+    padding: 6mm 8mm 8mm;
+  }
+
+  .customer {
+    margin: 0 0 5mm 0;
+  }
+
+  .customer p {
+    margin: 0 0 1mm 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 5mm;
+  }
+
+  th {
+    text-align: left;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.4pt;
+    color: #7d845a;
+    border-bottom: 1.5px solid #7d845a;
+    padding: 0 2mm 2mm 0;
+  }
+
+  td {
+    padding: 2.2mm 2mm 2.2mm 0;
+    border-bottom: 1px dashed #d8d2c4;
+  }
+
+  .num {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .totals {
+    width: 72mm;
+    margin-left: auto;
+    background: #f5f0e8;
+    padding: 3mm 4mm;
+  }
+
+  .totals td {
+    border: none;
+    padding: 1.4mm 0;
+  }
+
+  .totals .grand td {
+    border-top: 1.5px solid #7d845a;
+    font-weight: bold;
+    font-size: 12pt;
+    color: #7d845a;
+    padding-top: 2.5mm;
+  }
+
+  .paid {
+    margin: 6mm 0 0 0;
+    text-align: center;
+    font-size: 10pt;
+  }
+
+  .thanks {
+    margin: 3mm 0 0 0;
+    text-align: center;
+    font-size: 9.5pt;
+    color: #7a7468;
+  }
+</style>
+</head>
+<body>
+
+  <div class="slip">
+    <div class="banner">
+      <p class="shop-name">Al Noor Stationery</p>
+      <p class="shop-detail">Olaya Street, Riyadh, Saudi Arabia</p>
+      <p class="shop-detail">+966 11 445 8890</p>
+      <p class="shop-detail">VAT No. 300055566600003</p>
+      <p class="doc-title">Sales Receipt</p>
+    </div>
+
+    <div class="meta">
+      <p><span class="label">Receipt No.</span> INV-0001</p>
+      <p><span class="label">Date</span> 10/09/2026</p>
+    </div>
+
+    <div class="body">
+      <div class="customer">
+        <p><span class="label">Customer</span> Walk-in customer</p>
+        <p><span class="label">Payment</span> Mada</p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th class="num">Qty</th>
+            <th class="num">Price</th>
+            <th class="num">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>A4 notebook, 80 sheets</td>
+            <td class="num">10</td>
+            <td class="num">7.50</td>
+            <td class="num">75.00</td>
+          </tr>
+          <tr>
+            <td>Ballpoint pen set</td>
+            <td class="num">2</td>
+            <td class="num">20.00</td>
+            <td class="num">40.00</td>
+          </tr>
+          <tr>
+            <td>Manila envelope, pack of 50</td>
+            <td class="num">1</td>
+            <td class="num">18.00</td>
+            <td class="num">18.00</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class="totals">
+        <tr>
+          <td>Subtotal</td>
+          <td class="num">133.00 SAR</td>
+        </tr>
+        <tr>
+          <td>VAT (15%)</td>
+          <td class="num">19.95 SAR</td>
+        </tr>
+        <tr class="grand">
+          <td>Total</td>
+          <td class="num">152.95 SAR</td>
+        </tr>
+      </table>
+
+      <p class="paid">Paid</p>
+      <p class="thanks">Thank you for shopping with us.</p>
+    </div>
+  </div>
+
+</body>
+</html>
